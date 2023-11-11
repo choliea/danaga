@@ -33,7 +33,7 @@ jobs:
       
     - name: remove application-local.properties
       run: |
-          rm ./src/main/resources/local.properties
+          rm ./src/main/resources/application-local.properties
          
     - name: make env.properties
       run: |
