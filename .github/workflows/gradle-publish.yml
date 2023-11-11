@@ -30,11 +30,17 @@ jobs:
 
     - name: Run chmod to make gradlew executable
       run: chmod +x ./gradlew
-  
+      
+    - name: make application-prod.properties
+      run: |
+          cd ./src/main/resources
+          touch ./application-prod.properties
+          echo "${{ secrets.PROD_PROPERTIES }}" > ./application-prod.properties
+      
     - name: Build with Gradle
       uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
       with:
-        arguments: clean build--exclude-task test bootJar
+        arguments: clean build bootJar
 
     - name: Get current time
       uses: 1466587594/get-current-time@v2
@@ -46,19 +52,10 @@ jobs:
     - name: Generate deployment package
       run: |
         mkdir -p deployment
-        cp builc/libs/Avengers-0.0.1-SNAPSHOT.jar deployment/Avengers-0.0.1-SNAPSHOT.jar
+        cp build/libs/danaga-0.0.1-SNAPSHOT.jar deployment/danaga-0.0.1-SNAPSHOT.jar
         # cp deployment/Procfile deployment/Procfile
-        cd deployment && zip -r Avengers-${{steps.current-time.outputs.formattedTime}} .
+        cd deployment && zip -r danaga-${{steps.current-time.outputs.formattedTime}} .
         ls
-        
-    - name: Set Environment Variable
-      run: eb setenv SPRING_PROFILES_ACTIVE=prod
-      env:
-        AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
-        AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-        AWS_DEFAULT_REGION: 'ap-northeast-1'
-        EB_APPLICATION_NAME: 'danaga-app'
-        EB_ENVIRONMENT_NAME: 'Danaga-env'
         
     - name: Deploy Avengers to EB
       uses: einaregilsson/beanstalk-deploy@v14
@@ -67,8 +64,8 @@ jobs:
         aws_secret_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
         application_name: danaga-app
         environment_name: Danaga-env
-        version_label: Avengers-${{steps.current-time.outputs.formattedTime}}
+        version_label: danaga-${{steps.current-time.outputs.formattedTime}}
         region: ap-northeast-1
-        deployment_package: deployment/Avengers-${{steps.current-time.outputs.formattedTime}}.zip
+        deployment_package: deployment/danaga-${{steps.current-time.outputs.formattedTime}}.zip
         
    
