@@ -31,9 +31,9 @@ jobs:
     - name: Run chmod to make gradlew executable
       run: chmod +x ./gradlew
       
-    - name: make application.properties
+    - name: remove application-local.properties
       run: |
-          rm ./src/main/resources
+          rm ./src/main/resources/local.properties
          
     - name: make env.properties
       run: |
