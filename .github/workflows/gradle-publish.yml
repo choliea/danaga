@@ -46,7 +46,7 @@ jobs:
     - name: Generate deployment package
       run: |
         mkdir -p deployment
-        cp builc/libs/danaga-0.0.1-SNAPSHOT.jar deployment/danaga-0.0.1-SNAPSHOT.jar
+        cp build/libs/danaga-0.0.1-SNAPSHOT.jar deployment/danaga-0.0.1-SNAPSHOT.jar
         # cp deployment/Procfile deployment/Procfile
         cd deployment && zip -r danaga-${{steps.current-time.outputs.formattedTime}} .
         ls
