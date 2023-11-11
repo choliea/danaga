@@ -36,6 +36,12 @@ jobs:
           cd ./src/main/resources
           touch ./application-prod.properties
           echo "${{ secrets.PROD_PROPERTIES }}" > ./application-prod.properties
+    
+    - name: make application.properties
+      run: |
+          cd ./src/main/resources
+          touch ./application.properties
+          echo "${{ secrets.APP_PROPERTIES }}" > ./application.properties
       
     - name: Build with Gradle
       uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
