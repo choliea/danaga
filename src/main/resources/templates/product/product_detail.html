@@ -14,7 +14,7 @@
 				<div class="col-md-6">
 					<div class="product-gallary" th:object="${productList}">
 						<div class="gallery-wrapper">
-						<img th:if="${productList.stock==0}" class="product-badge text-danger" src="images/sold-out.png" style="position: absolute; top: 0; left: 0; width: 70px; height: 70px; z-index: 10;">
+						<img th:if="${productList.stock==0}" class="product-badge text-danger" src="img/sold-out.png" style="position: absolute; top: 0; left: 0; width: 70px; height: 70px; z-index: 10;">
 						</div>
 						<div class="product-carousel owl-carousel gallery-wrapper">
 								<img src="img/shop/single/01.jpg" alt="Product" th:src="@{*{pImage}}">

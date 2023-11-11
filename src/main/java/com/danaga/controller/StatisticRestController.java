@@ -231,7 +231,7 @@ public class StatisticRestController {
 
 	private String saveImage(MultipartFile file) throws IOException {
 		String fileName = file.getOriginalFilename();
-		String filePath = System.getProperty("user.dir") + "/src/main/resources/static/images/uploaded/"
+		String filePath = System.getProperty("user.dir") + "/src/main/resources/static/img/uploaded/"
 				+ File.separator + fileName;
 
 		File dest = new File(filePath);
@@ -241,7 +241,7 @@ public class StatisticRestController {
 
 	public static String convertPath(String originalPath) {
 		String fileName = originalPath.substring(originalPath.lastIndexOf("\\") + 1);
-		String newPath = "/images/uploaded/" + fileName;
+		String newPath = "/img/uploaded/" + fileName;
 		return newPath;
 	}
 
