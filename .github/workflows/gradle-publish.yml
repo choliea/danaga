@@ -31,12 +31,6 @@ jobs:
     - name: Run chmod to make gradlew executable
       run: chmod +x ./gradlew
       
-    - name: make application-prod.properties
-      run: |
-          cd ./src/main/resources
-          touch ./application-prod.properties
-          echo "${{ secrets.PROD_PROPERTIES }}" > ./application-prod.properties
-    
     - name: make application.properties
       run: |
           cd ./src/main/resources
