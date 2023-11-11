@@ -51,15 +51,6 @@ jobs:
         cd deployment && zip -r danaga-${{steps.current-time.outputs.formattedTime}} .
         ls
         
-    - name: Set Environment Variable
-      run: eb setenv SPRING_PROFILES_ACTIVE=prod
-      env:
-        AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
-        AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-        AWS_DEFAULT_REGION: 'ap-northeast-1'
-        EB_APPLICATION_NAME: 'danaga-app'
-        EB_ENVIRONMENT_NAME: 'Danaga-env'
-        
     - name: Deploy Avengers to EB
       uses: einaregilsson/beanstalk-deploy@v14
       with:
