@@ -7,10 +7,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
 @SpringBootApplication
-public class AvengersApplication {
+public class DanagaApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(AvengersApplication.class, args);
+		SpringApplication.run(DanagaApplication.class, args);
 	}
 
 }
