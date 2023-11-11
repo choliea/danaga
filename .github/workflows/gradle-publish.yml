@@ -30,7 +30,13 @@ jobs:
 
     - name: Run chmod to make gradlew executable
       run: chmod +x ./gradlew
-  
+      
+    - name: make application-prod.properties
+      run: |
+          cd ./src/main/resources
+          touch ./application-prod.properties
+          echo "${{ secrets.PROD_PROPERTIES }}" > ./application-prod.properties
+      
     - name: Build with Gradle
       uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
       with:
