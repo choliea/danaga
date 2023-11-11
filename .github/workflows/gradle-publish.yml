@@ -33,10 +33,8 @@ jobs:
       
     - name: make application.properties
       run: |
-          cd ./src/main/resources
-          touch ./application.properties
-          echo "${{ secrets.APP_PROPERTIES }}" > ./application.properties
-
+          rm ./src/main/resources
+         
     - name: make env.properties
       run: |
           cd ./src/main/resources
