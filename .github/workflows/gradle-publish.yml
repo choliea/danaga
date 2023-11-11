@@ -31,10 +31,12 @@ jobs:
     - name: Run chmod to make gradlew executable
       run: chmod +x ./gradlew
       
-    - name: remove application-local.properties
+    - name: make application.properties
       run: |
-          rm ./src/main/resources/application-local.properties
-         
+          cd ./src/main/resources
+          touch ./application.properties
+          echo "${{ secrets.APP_PROPERTIES }}" > ./application.properties
+     
     - name: make env.properties
       run: |
           cd ./src/main/resources
