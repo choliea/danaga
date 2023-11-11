@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="layout/layout(title='내 정보')">
+<!-- Body-->
+<!-- Header -->
+
+<head></head>
+
+
+<body>
+<!-- Page Content-->
+	<th:block layout:fragment="content">
+		<div class="container padding-bottom-3x mb-2">
+			<div class="row">
+				<div class="col-lg-4" th:insert="~{mypage_component :: mypage(accountPage='profile')}">
+
+				</div>	
+				<div class="col-lg-8">
+					<div class="padding-top-2x mt-2 hidden-lg-up"></div>
+					<form class="row" name="f" id="form-account-update" th:object="${loginUser}" method="post">
+						<input type="hidden" id="userName" name="userName" value="guard" th:value="*{userName}" />
+						<div class="col-sm-6">
+							<div class="form-group">
+								<label for="email">E-mail 주소</label> 
+								<input name="email" value="guard" th:value="*{email}" class="form-control" type="email" id="email" disabled>
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<div class="form-group">
+								<label for="reg-phone">휴대폰 번호</label> 
+								<input name="phoneNo" value="guard" th:value="*{phoneNo}" class="form-control" type="text" id="phone" disabled>
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<div class="form-group">
+								<label for="nickname">닉네임</label> 
+								<input name="nickname" value="guard" th:value="*{nickname}" class="form-control" type="text" id="nickname" required>
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<div class="form-group">
+								<label for="birthday">생년월일</label> 
+								<input name="birthday" value="guard"
+									th:value="${#dates.format(loginUser.birthday, 'yyyy-MM-dd')}" class="form-control" type="text" id="birthday" disabled>
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<div class="form-group">
+								<label for="pass">비밀번호</label> 
+								<input name="password" value="guard" th:value="*{password}" class="form-control" type="password" id="pass" required>
+								<input type="checkbox" id="show-password"> 비밀번호 표시
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<div class="form-group">
+								<label for="pass-confirm">비밀번호 확인</label> 
+								<input name="password2" class="form-control" type="password" id="pass-confirm" required>
+							</div>
+						</div>
+						<div class="col-sm-10">
+							<div class="form-group">
+								<label for="reg-address">주소</label><br>
+								<input name="postcode" th:value="*{postCode}"
+								type="text" class="form-control" id="postcode" placeholder="우편번호" disabled>
+								<input name="findaddr"
+								type="button" class="form-control" onclick="execDaumPostcode()" value="우편번호 찾기"><br>
+								<input name="address" th:value="*{address}"
+								type="text" class="form-control" id="address" placeholder="주소" disabled>
+								<input name="detailaddress" th:value="*{detailAddress}"
+								type="text" class="form-control" id="detailaddress" placeholder="상세주소" required>
+							</div>
+						</div>
+						<div class="col-12">
+							<hr class="mt-2 mb-3">
+							<div class="col-12 text-center text-sm-right">
+								<div class="custom-control custom-checkbox d-block"></div>
+								<button class="btn-account-profile-update btn btn-primary margin-right-none" th:if="${session.role == 'Kakao'}" id="mergy_account" type="button" onclick="window.location.href = '/member_join_form_kakao';">카카오 통합</button>
+								<button class="btn-account-profile-update btn btn-primary margin-right-none" id="quit_btn" type="button" onclick="window.location.href = '/member_quit_form';">회원탈퇴</button>
+								<button class="btn-account-profile-update btn btn-primary margin-right-none" id="modify_action_btn" type="button">수정하기</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</th:block>
+	<th:block layout:fragment="script">
+		<script type="text/javascript">
+			function isNoValidPassword(password) {
+			    // 비밀번호 길이가 8에서 20 사이여야 함
+			    // 최소한 하나의 문자, 하나의 숫자, 그리고 하나의 특수 문자가 포함되어야 함
+			    const hasLetter = /[a-zA-Z]/.test(password);
+			    const hasNumber = /\d/.test(password);
+			    const hasSpecialChar = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\-]/.test(password);
+			    if(!(hasLetter && hasNumber && hasSpecialChar)){
+				    return true;
+				}
+				return false;
+			}
+		/***************프로필변경 [/member/modify_action_rest]******* */
+		let member_modify_action_rest=function(data){
+			$.ajax({
+					url:'/member/modify_action_rest',
+    				method:'PUT',
+    				data:JSON.stringify(data),
+    				dataType: "json",
+    				contentType: 'application/json;charset=UTF-8',
+    				success:function(resultJson){
+					if(resultJson.result==1) {
+						$('#nickname').css('border','0.5px solid orange');
+						$('#nickname').tooltip({'trigger':'hover', 'title': resultJson.msg});
+			    		$('#nickname').tooltip('show');
+					} else {
+						alert("수정되었습니다");
+		   			}
+				},
+				error:function(){
+					location.href="/404";
+				}
+			});
+		};
+    	/*********사용자정보수정이벤트 처리**********/
+    	$('#modify_action_btn').on('click',function(e){
+    		
+    		if($('#pass').val()!=$('#pass-confirm').val()){
+    			$('#pass').css('border','0.5px dotted orange');
+    			$('#pass-confirm').css('border','0.5px dotted orange');
+    			$('#pass-confirm').tooltip({'trigger':'hover', 'title':'비밀번호와 비밀번호확인이 일치하여야합니다.'});
+    			$('#pass-confirm').tooltip('show');
+    		}else{
+    			$('#pass').css('border','0.5px solid green');
+    			$('#pass-confirm').css('border','0.5px solid green');
+    			//var params = $('#form-account-update').serialize();
+				let nickname = $('#nickname').val();
+				let password = $('#pass').val();
+				let postCode = $('#postcode').val();
+				let address = $('#address').val();
+				let detailAddress = $('#detailaddress').val();
+    			let data = {
+				"nickname" : nickname,
+				"password" : password,
+				"postCode" : postCode,
+				"address" : address,
+				"detailAddress" : detailAddress
+				}
+        		member_modify_action_rest(data);
+    		}
+    	});
+    	/*********사용자정보수정폼 패쓰워드와 패쓰워드확인 유효성처리**********/
+		//비밀번호
+        	$('#pass').on('change',function(e){
+        		if(($('#pass').val().length < 8 || $('#pass').val().length > 20)){
+        		if(isNoValidPassword($('#reg-pass').val())){
+        			$('#pass').css('border','0.5px dotted orange');
+        			$('#pass').tooltip({'trigger':'hover', 'title':'비밀번호는 8 ~ 20자 이내이고 최소한 하나의 문자, 숫자, 특수 문자가 포함되어야 합니다.'});
+        			$('#pass').tooltip('show');
+        			$('#modify_action_btn').attr('disabled', 'disabled');
+        		} else {
+        			$('#pass').css('border','0.5px dotted orange');
+        			$('#pass').tooltip({'trigger':'hover', 'title':'비밀번호는 8 ~ 20자 이내이고 최소한 하나의 문자, 숫자, 특수 문자가 포함되어야 합니다.'});
+        			$('#pass').tooltip('show');
+        			$('#modify_action_btn').attr('disabled', 'disabled');
+        		}
+			} else {
+				if(!isNoValidPassword($('#pass').val())){
+				if($('#pass').val()!=$('#pass-confirm').val()) {
+					$('#pass').css('border','0.5px dotted orange');
+					$('#pass').tooltip('hide');
+        			$('#pass').tooltip('dispose');
+        			$('#pass').tooltip({'trigger':'hover', 'title':'비밀번호와 비밀번호확인이 일치하여야 합니다.'});
+        			$('#pass').tooltip('show');
+        			$('#modify_action_btn').attr('disabled', 'disabled');
+				} else if($('#pass').val()==$('#pass-confirm').val()) {
+					$('#pass,#pass-confirm').css('border','0.5px solid green');
+        			$('#pass,#pass-confirm').tooltip('hide');
+        			$('#pass,#pass-confirm').tooltip('dispose');
+        			$('#modify_action_btn').removeAttr('disabled');
+				}
+			} else {
+				$('#pass').css('border','0.5px dotted orange');
+        			$('#pass').tooltip({'trigger':'hover', 'title':'비밀번호는 8 ~ 20자 이내이고 최소한 하나의 문자, 숫자, 특수 문자가 포함되어야 합니다.'});
+        			$('#pass').tooltip('show');
+        			$('#modify_action_btn').attr('disabled', 'disabled');
+			}
+			}
+        	});
+			$('#pass-confirm').on('change',function(e){
+        	if(($('#pass-confirm').val().length < 8 || $('#pass-confirm').val().length > 20)){
+        		if(isNoValidPassword($('#pass-confirm').val())){
+        			$('#pass,#pass-confirm').css('border','0.5px dotted orange');
+        			$('#pass,#pass-confirm').tooltip('hide');
+        			$('#pass,#pass-confirm').tooltip('dispose');
+        			$('#pass-confirm').tooltip({'trigger':'hover', 'title':'비밀번호는 8 ~ 20자 이내이고 최소한 하나의 문자, 숫자, 특수 문자가 포함되어야 합니다.'});
+        			$('#pass-confirm').tooltip('show');
+        			$('#modify_action_btn').attr('disabled', 'disabled');
+        		} else {
+        			$('#pass,#pass-confirm').css('border','0.5px dotted orange');
+        			$('#pass,#pass-confirm').tooltip('hide');
+        			$('#pass,#pass-confirm').tooltip('dispose');
+        			$('#pass-confirm').tooltip({'trigger':'hover', 'title':'비밀번호는 8 ~ 20자 이내이고 최소한 하나의 문자, 숫자, 특수 문자가 포함되어야 합니다.'});
+        			$('#pass-confirm').tooltip('show');
+        			$('#modify_action_btn').attr('disabled', 'disabled');
+        		}
+        	} else {
+				if(!isNoValidPassword($('#pass').val())){
+        		if($('#pass').val()!=$('#pass-confirm').val()){
+        			$('#pass,#pass-confirm').css('border','0.5px dotted orange');
+        			$('#pass,#pass-confirm').tooltip('hide');
+        			$('#pass,#pass-confirm').tooltip('dispose');
+        			$('#pass-confirm').tooltip({'trigger':'hover', 'title':'비밀번호는 8 ~ 20자 이내이고 최소한 하나의 문자, 숫자, 특수 문자가 포함되어야 합니다.'});
+        			$('#pass-confirm').tooltip('show');
+        			$('#modify_action_btn').attr('disabled', 'disabled');
+        		} else if($('#pass').val()==$('#pass-confirm').val()) {
+					$('#pass,#pass-confirm').css('border','0.5px solid green');
+        			$('#pass,#pass-confirm').tooltip('hide');
+        			$('#pass,#pass-confirm').tooltip('dispose');
+        			$('#modify_action_btn').removeAttr('disabled');
+				}
+        	} else {
+        		$('#pass,#pass-confirm').css('border','0.5px dotted orange');
+    			$('#pass,#pass-confirm').tooltip('hide');
+    			$('#pass,#pass-confirm').tooltip('dispose');
+    			$('#pass-confirm').tooltip({'trigger':'hover', 'title':'비밀번호는 8 ~ 20자 이내이고 최소한 하나의 문자, 숫자, 특수 문자가 포함되어야 합니다.'});
+    			$('#pass-confirm').tooltip('show');
+    			$('#modify_action_btn').attr('disabled', 'disabled');
+			}
+			}
+        	});
+// 지도
+function execDaumPostcode() {
+        new daum.Postcode({
+            oncomplete: function(data) {
+                // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+                // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+                // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+                var addr = ''; // 주소 변수
+                var extraAddr = ''; // 참고항목 변수
+
+                //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+                if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                    addr = data.roadAddress;
+                } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                    addr = data.jibunAddress;
+                }
+
+                // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+                if(data.userSelectedType === 'R'){
+                    // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+                    // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                        extraAddr += data.bname;
+                    }
+                    // 건물명이 있고, 공동주택일 경우 추가한다.
+                    if(data.buildingName !== '' && data.apartment === 'Y'){
+                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                    }
+                    // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+                    if(extraAddr !== ''){
+                        extraAddr = ' (' + extraAddr + ')';
+                    }
+                    // 조합된 참고항목을 해당 필드에 넣는다.
+                }
+
+                // 우편번호와 주소 정보를 해당 필드에 넣는다.
+                document.getElementById('postcode').value = data.zonecode;
+                document.getElementById("address").value = addr;
+                // 커서를 상세주소 필드로 이동한다.
+                document.getElementById("detailaddress").focus();
+            }
+        }).open();
+    }
+$(document).ready(function() {
+	  $('#show-password').change(function() {
+	    let passwordInput = $('#pass');
+	    let confirm_passwordInput = $('#pass-confirm');
+	    if (this.checked) {
+	      passwordInput.attr('type', 'text');
+	      confirm_passwordInput.attr('type', 'text');
+	    } else {
+	      passwordInput.attr('type', 'password');
+	      confirm_passwordInput.attr('type', 'password');
+	    }
+	  });
+	});
+		</script>
+	</th:block>
+</body>
+</html>

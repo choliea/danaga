@@ -1,0 +1,8 @@
+-- 1. 시퀀스 증가값 일시 변경
+ALTER SEQUENCE [변경 대상 시퀀스] INCREMENT BY 500;
+
+-- 2. 시퀀스 값 현행화
+SELECT [변경 대상 시퀀스].NEXTVAL FROM DUAL; 
+
+-- 3. 다시 1씩 증가될 수 있도록 변경
+ALTER SEQUENCE [변경 대상 시퀀스] INCREMENT BY 1;

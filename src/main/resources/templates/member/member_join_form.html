@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+ layout:decorate="layout/layout(title='회원가입')">
+  <!-- Body-->
+	  <!-- Header -->
+    <head>
+
+	</head>
+  
+  <body>
+  <th:block layout:fragment="content">
+      <!-- Page Content-->
+      <div class="container padding-bottom-3x mb-2" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+          <div class="col-md-6">
+            <div class="padding-top-3x hidden-md-up"></div>
+            <h3 class="margin-bottom-1x">회원가입</h3>
+            <form class="row" name="f" id="form-account-regist" method="post" >
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="reg-username">아이디</label>
+                  <input class="form-control"  name="userName" type="text" id="reg-username" required>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="reg-name">이름</label>
+                  <input class="form-control"  name="name" type="text" id="reg-name" required>
+                </div>
+              </div>
+              
+              <div class="col-sm-6">
+                <div class="form-group" id="mail_input" name="mail_input">
+                  <label for="reg-email">E-mail 주소</label>
+                  <input class="form-control"  name="email" type="email" placeholder="ex) email@google.com" id="reg-email" required>
+			      <button class="btn-account-register btn btn-primary margin-bottom-none"
+			       type="button" id="sendBtn" name="sendBtn" onclick="sendNumber()">이메일 인증</button>
+                </div>
+              </div>
+              <div class="col-sm-6">
+				<div class="form-group" id="mail_number" name="mail_number" style="display: none">
+				  <label for="mail_number">인증번호</label>
+				  <input class="form-control" type="text" name="number" id="number" placeholder="인증번호 입력" required>
+				  <button class="btn-account-register btn btn-primary margin-bottom-none"
+				     type="button" name="confirmBtn" id="confirmBtn" onclick="confirmNumber()">인증번호 확인</button>
+				</div>
+              </div>
+			  <br>
+			    <input type="text" id="Confirm" name="Confirm" style="display: none" value="">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="reg-pass">비밀번호</label>
+                  <input class="form-control" name="password" type="password" id="reg-pass" required>
+			      <input type="checkbox" id="show-password"> 비밀번호 표시
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="reg-pass-confirm">비밀번호 확인</label>
+                  <input class="form-control" name="password2" type="password" id="reg-pass-confirm" required>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="reg-phone">휴대폰 번호</label>
+                  <input class="form-control"  name="phoneNo" type="text" placeholder="ex) 010-1111-1111" id="reg-phone" required>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="reg-nickname">닉네임</label>
+                  <input class="form-control"  name="nickname" type="text" id="reg-nickname" required>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="reg-birthday">생년월일</label>
+                  <input class="form-control"  name="birthday" type="date" id="reg-birthday" required>
+                </div>
+              </div>
+              <!--주소 -->
+              <div class="col-sm-10">
+				<div class="form-group">
+					<label for="reg-address">주소</label><br>
+					<input name="postcode"
+					type="text" class="form-control" id="reg-postcode" placeholder="우편번호" disabled required>
+					<input name="findaddr"
+					type="button" class="form-control" onclick="execDaumPostcode()" value="우편번호 찾기"><br>
+					<input name="address"
+					type="text" class="form-control" id="reg-address" placeholder="주소" disabled required>
+					<input name="detailaddress"
+					type="text" class="form-control" id="reg-detailaddress" placeholder="상세주소" required>
+				</div>
+			  </div>
+			   <!--주소 -->
+              <div class="col-12 text-center text-sm-right">
+                <button class="btn-account-register btn btn-primary margin-bottom-none" id="join-action-btn" type="submit">회원가입</button>
+                <button class="btn-account-reset btn btn-primary margin-bottom-none" type="reset">초기화</button>
+              </div>
+            </form>
+          </div>
+      </div>
+    </th:block>
+    
+    <th:block layout:fragment="script" >
+     <script type="text/javascript">
+		  /**************** 회원가입 **********************/
+function isNoValidName(name) {
+    const nameRegex =  /^[가-힣]{2,5}$/;
+    if(nameRegex.test(name)) {
+		return false;
+	}
+    return true;
+}
+function isNoValidUserName(userName) {
+    const userNameRegex = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
+    return userNameRegex.test(userName);
+}
+function isNoValidEmail(email) {
+    // 간단한 이메일 유효성 검사를 수행합니다.
+    const emailRegex =  /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
+    if(emailRegex.test(email)) {
+		return false;
+	}
+    return true;
+}
+function isNoValidPassword(password) {
+    // 비밀번호 길이가 8에서 20 사이여야 함
+    // 최소한 하나의 문자, 하나의 숫자, 그리고 하나의 특수 문자가 포함되어야 함
+    const hasLetter = /[a-zA-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\-]/.test(password);
+    if(!(hasLetter && hasNumber && hasSpecialChar)){
+	    return true;
+	}
+	return false;
+}
+function isNoValidPhoneNo(phoneNo) {
+    // 010-1234-1234 형식의 휴대폰 번호 유효성 검사를 수행합니다.
+    const phoneRegex = /^(01[016789]{1})-?[0-9]{3,4}-?[0-9]{4}$/;
+    if(phoneRegex.test(phoneNo)) {
+		return false;
+	}
+    return true;
+}
+let emailCheck = false;
+let member_join_action_rest=function(data){
+		if(emailCheck) {
+		$.ajax({
+				url:'/member/join_rest',
+				method:'POST',
+				data:JSON.stringify(data),
+				dataType:'json',
+				contentType: 'application/json;charset=UTF-8',
+				success:function(resultJson){
+					if(resultJson.result==1){
+						$('#reg-username').css('border','0.5px solid orange');
+						$('#reg-username').tooltip({'trigger':'hover', 'title': resultJson.msg});
+			    		$('#reg-username').tooltip('show');
+			    		setTimeout(function () {
+					    $('#reg-username').tooltip('dispose');
+					    }, 2000);
+					} else if(resultJson.result==2) {
+						$('#reg-username').css('border','0.5px solid green');
+						$('#reg-email').css('border','0.5px solid orange');
+						$('#reg-email').tooltip({'trigger':'hover', 'title': resultJson.msg});
+			    		$('#reg-email').tooltip('show');
+			    		setTimeout(function () {
+					    $('#reg-email').tooltip('dispose');
+					    }, 2000);
+					} else if(resultJson.result==3) {
+						$('#reg-username').css('border','0.5px solid green');
+						$('#reg-email').css('border','0.5px solid green');
+						$('#reg-phone').css('border','0.5px solid orange');
+						$('#reg-phone').tooltip({'trigger':'hover', 'title': resultJson.msg});
+			    		$('#reg-phone').tooltip('show');
+			    		setTimeout(function () {
+					    $('#reg-phone').tooltip('dispose');
+					    }, 2000);
+					} else if(resultJson.result==4) {
+						$('#reg-username').css('border','0.5px solid green');
+						$('#reg-email').css('border','0.5px solid green');
+						$('#reg-phone').css('border','0.5px solid green');
+						$('#reg-nickname').css('border','0.5px solid orange');
+						$('#reg-nickname').tooltip({'trigger':'hover', 'title': resultJson.msg});
+			    		$('#reg-nickname').tooltip('show');
+			    		setTimeout(function () {
+					    $('#reg-nickname').tooltip('dispose');
+					    }, 2000);
+					} else {
+						location.href="/member_join_complete_page";
+		   			}
+				},
+				error:function(){
+					alert("회원가입 실패 다시 시도해 주십시요.");
+				}
+			});
+		} else {
+        			$('#reg-email').tooltip({'trigger':'hover', 'title':'이메일 인증을 진행해주세요.'});
+        			$('#reg-email').tooltip('show');
+				    setTimeout(function () {
+				    $('#reg-email').tooltip('dispose');
+				    }, 2000);
+        		}
+			
+};
+$(function(){
+    		/**************회원가입폼 유효성체크*********************/
+    		$('#join-action-btn').attr('disabled', 'disabled');
+    		//아이디
+    		$('#reg-username').on('change',function(e){
+				if(($('#reg-username').val().length < 8 || $('#reg-username').val().length > 20) || isNoValidUserName($('#reg-username').val())){
+        			$('#reg-username').css('border','0.5px dotted orange');
+        			$('#reg-username').tooltip({'trigger':'hover', 'title':'아이디는 한글 미포함 8 ~ 20자 이내여야 합니다'});
+        			$('#reg-username').tooltip('show');
+        		} else {
+        			$('#reg-username').css('border','0.5px solid green');
+        			$('#reg-username').tooltip('hide');
+        			$('#reg-username').tooltip('dispose');
+        		}
+        	});
+        	//닉네임
+    		$('#reg-nickname').on('change',function(e){
+				if($('#reg-nickname').val().length < 1 || $('#reg-nickname').val().length > 10){
+        			$('#reg-nickname').css('border','0.5px dotted orange');
+        			$('#reg-nickname').tooltip({'trigger':'hover', 'title':'닉네임은 1 ~ 10자 이내여야 합니다'});
+        			$('#reg-nickname').tooltip('show');
+        		} else {
+        			$('#reg-nickname').css('border','0.5px solid green');
+        			$('#reg-nickname').tooltip('hide');
+        			$('#reg-nickname').tooltip('dispose');
+        		}
+        	});
+        	//이름
+    		$('#reg-name').on('change',function(e){
+				if(isNoValidName($('#reg-name').val())){
+        			$('#reg-name').css('border','0.5px dotted orange');
+        			$('#reg-name').tooltip({'trigger':'hover', 'title':'이름은 완성된 한글 2~5자 이내여야 합니다'});
+        			$('#reg-name').tooltip('show');
+        		} else {
+        			$('#reg-name').css('border','0.5px solid green');
+        			$('#reg-name').tooltip('hide');
+        			$('#reg-name').tooltip('dispose');
+        		}
+        	});
+        	//비밀번호
+        	$('#reg-pass').on('change',function(e){
+        		if(($('#reg-pass').val().length < 8 || $('#reg-pass').val().length > 20)){
+        		if(isNoValidPassword($('#reg-pass').val())){
+        			$('#reg-pass').css('border','0.5px dotted orange');
+        			$('#reg-pass').tooltip({'trigger':'hover', 'title':'비밀번호는 8 ~ 20자 이내이고 최소한 하나의 문자, 숫자, 특수 문자가 포함되어야 합니다.'});
+        			$('#reg-pass').tooltip('show');
+        			$('#join-action-btn').attr('disabled', 'disabled');
+        		} else {
+        			$('#reg-pass').css('border','0.5px dotted orange');
+        			$('#reg-pass').tooltip({'trigger':'hover', 'title':'비밀번호는 8 ~ 20자 이내이고 최소한 하나의 문자, 숫자, 특수 문자가 포함되어야 합니다.'});
+        			$('#reg-pass').tooltip('show');
+        			$('#join-action-btn').attr('disabled', 'disabled');
+        		}
+			} else {
+				if(!isNoValidPassword($('#reg-pass').val())){
+				if($('#reg-pass').val()!=$('#reg-pass-confirm').val()) {
+					$('#reg-pass').css('border','0.5px dotted orange');
+					$('#reg-pass').tooltip('hide');
+        			$('#reg-pass').tooltip('dispose');
+        			$('#reg-pass').tooltip({'trigger':'hover', 'title':'비밀번호와 비밀번호확인이 일치하여야 합니다.'});
+        			$('#reg-pass').tooltip('show');
+        			$('#join-action-btn').attr('disabled', 'disabled');
+				} else if($('#reg-pass').val()==$('#reg-pass-confirm').val()) {
+					$('#reg-pass,#reg-pass-confirm').css('border','0.5px solid green');
+        			$('#reg-pass,#reg-pass-confirm').tooltip('hide');
+        			$('#reg-pass,#reg-pass-confirm').tooltip('dispose');
+        			$('#join-action-btn').removeAttr('disabled');
+				}
+			} else {
+				$('#reg-pass').css('border','0.5px dotted orange');
+        			$('#reg-pass').tooltip({'trigger':'hover', 'title':'비밀번호는 8 ~ 20자 이내이고 최소한 하나의 문자, 숫자, 특수 문자가 포함되어야 합니다.'});
+        			$('#reg-pass').tooltip('show');
+        			$('#join-action-btn').attr('disabled', 'disabled');
+			}
+			}
+        	});
+			$('#reg-pass-confirm').on('change',function(e){
+        	if(($('#reg-pass-confirm').val().length < 8 || $('#reg-pass-confirm').val().length > 20)){
+        		if(isNoValidPassword($('#reg-pass-confirm').val())){
+        			$('#reg-pass,#reg-pass-confirm').css('border','0.5px dotted orange');
+        			$('#reg-pass,#reg-pass-confirm').tooltip('hide');
+        			$('#reg-pass,#reg-pass-confirm').tooltip('dispose');
+        			$('#reg-pass-confirm').tooltip({'trigger':'hover', 'title':'비밀번호는 8 ~ 20자 이내이고 최소한 하나의 문자, 숫자, 특수 문자가 포함되어야 합니다.'});
+        			$('#reg-pass-confirm').tooltip('show');
+        			$('#join-action-btn').attr('disabled', 'disabled');
+        		} else {
+        			$('#reg-pass,#reg-pass-confirm').css('border','0.5px dotted orange');
+        			$('#reg-pass,#reg-pass-confirm').tooltip('hide');
+        			$('#reg-pass,#reg-pass-confirm').tooltip('dispose');
+        			$('#reg-pass-confirm').tooltip({'trigger':'hover', 'title':'비밀번호는 8 ~ 20자 이내이고 최소한 하나의 문자, 숫자, 특수 문자가 포함되어야 합니다.'});
+        			$('#reg-pass-confirm').tooltip('show');
+        			$('#join-action-btn').attr('disabled', 'disabled');
+        		}
+        	} else {
+				if(!isNoValidPassword($('#reg-pass').val())){
+        		if($('#reg-pass').val()!=$('#reg-pass-confirm').val()){
+        			$('#reg-pass-confirm,#reg-pass').css('border','0.5px dotted orange');
+        			$('#reg-pass,#reg-pass-confirm').tooltip('hide');
+        			$('#reg-pass,#reg-pass-confirm').tooltip('dispose');
+        			$('#reg-pass-confirm').tooltip({'trigger':'hover', 'title':'비밀번호와 비밀번호확인이 일치하여야 합니다.'});
+        			$('#reg-pass-confirm').tooltip('show');
+        			$('#join-action-btn').attr('disabled', 'disabled');
+        		} else if($('#reg-pass').val()==$('#reg-pass-confirm').val()) {
+					$('#reg-pass,#reg-pass-confirm').css('border','0.5px solid green');
+        			$('#reg-pass,#reg-pass-confirm').tooltip('hide');
+        			$('#reg-pass,#reg-pass-confirm').tooltip('dispose');
+        			$('#join-action-btn').removeAttr('disabled');
+				}
+        	} else {
+					$('#reg-pass,#reg-pass-confirm').css('border','0.5px dotted orange');
+        			$('#reg-pass,#reg-pass-confirm').tooltip('hide');
+        			$('#reg-pass,#reg-pass-confirm').tooltip('dispose');
+        			$('#reg-pass-confirm').tooltip({'trigger':'hover', 'title':'비밀번호는 8 ~ 20자 이내이고 최소한 하나의 문자, 숫자, 특수 문자가 포함되어야 합니다.'});
+        			$('#reg-pass-confirm').tooltip('show');
+        			$('#join-action-btn').attr('disabled', 'disabled');
+			}
+			}
+        	});
+        	//이메일
+        	$('#reg-email').on('change',function(e){
+        		if(isNoValidEmail($('#reg-email').val())) {
+        			$('#reg-email').css('border','0.5px dotted orange');
+        			$('#reg-email').tooltip({'trigger':'hover', 'title':'올바른 이메일 형식이 아닙니다.'});
+        			$('#reg-email').tooltip('show');
+        		} else {
+        			$('#reg-email').css('border','0.5px solid green');
+        			$('#reg-email').tooltip('hide');
+        			$('#reg-email').tooltip('dispose');
+        		}
+        	});
+        	//번호
+        	$('#reg-phone').on('change',function(e){
+        		if(isNoValidPhoneNo($('#reg-phone').val())) {
+        			$('#reg-phone').css('border','0.5px dotted orange');
+        			$('#reg-phone').tooltip({'trigger':'hover', 'title':'올바른 번호 형식이 아닙니다.'});
+        			$('#reg-phone').tooltip('show');
+        		} else {
+        			$('#reg-phone').css('border','0.5px solid green');
+        			$('#reg-phone').tooltip('hide');
+        			$('#reg-phone').tooltip('dispose');
+        		}
+        	});
+        	/******************************/
+    		/**********회원가입submit버튼[ajax]************/
+        	$('#form-account-regist').on('submit',function(e){
+    			//var params=$(e.target).serialize();
+    			let regUserName = $('#reg-username').val();
+				let regName = $('#reg-name').val();
+				let regBirthday = $('#reg-birthday').val();
+				let regEmail = $('#reg-email').val();
+				let regPhone = $('#reg-phone').val();
+				let regNickname = $('#reg-nickname').val();
+				let regPassword = $('#reg-pass').val();
+				let regPostCode = $('#reg-postcode').val();
+				let regAddress = $('#reg-address').val();
+				let regDetailAddress = $('#reg-detailaddress').val();
+    			let data = {
+				"userName" : regUserName, // 안되면 ' ' 붙이기
+				"name" : regName,
+				"birthday" : regBirthday,
+				"email" : regEmail,
+				"phoneNo" : regPhone,
+				"nickname" : regNickname,
+				"password" : regPassword,
+				"postCode" : regPostCode,
+				"address" : regAddress,
+				"detailAddress" : regDetailAddress
+			}
+    			$('#reg-username').css('border','0.5px solid green');
+    			$('#reg-username').tooltip('dispose');
+    			$('#form-account-regist').tooltip('dispose');
+        		member_join_action_rest(data);
+    			e.preventDefault();
+    		});
+});
+//지도 api
+function execDaumPostcode() {
+        new daum.Postcode({
+            oncomplete: function(data) {
+                // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+                // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+                // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+                var addr = ''; // 주소 변수
+                var extraAddr = ''; // 참고항목 변수
+
+                //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+                if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                    addr = data.roadAddress;
+                } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                    addr = data.jibunAddress;
+                }
+
+                // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+                if(data.userSelectedType === 'R'){
+                    // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+                    // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                        extraAddr += data.bname;
+                    }
+                    // 건물명이 있고, 공동주택일 경우 추가한다.
+                    if(data.buildingName !== '' && data.apartment === 'Y'){
+                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                    }
+                    // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+                    if(extraAddr !== ''){
+                        extraAddr = ' (' + extraAddr + ')';
+                    }
+                    // 조합된 참고항목을 해당 필드에 넣는다.
+                }
+
+                // 우편번호와 주소 정보를 해당 필드에 넣는다.
+                document.getElementById('reg-postcode').value = data.zonecode;
+                document.getElementById("reg-address").value = addr;
+                // 커서를 상세주소 필드로 이동한다.
+                document.getElementById("reg-detailaddress").focus();
+            }
+        }).open();
+    }
+//
+function sendNumber(){
+	if(isNoValidEmail($('#reg-email').val())) {
+        			$('#reg-email').css('border','0.5px dotted orange');
+        			$('#reg-email').tooltip({'trigger':'hover', 'title':'올바른 이메일 형식이 아닙니다.'});
+        			$('#reg-email').tooltip('show');
+	} else {
+    	$("#mail_number").css("display","block");
+		$('#reg-email').css('border','0.5px solid green');
+		$('#reg-email').tooltip('hide');
+		$('#reg-email').tooltip('dispose');
+		$.ajax({
+        url:"/emailauthentication",
+        type:"post",
+        dataType:"json",
+        data:{"mail" : $("#reg-email").val()},
+        success: function(data){
+            alert("인증번호 발송");
+            $("#Confirm").attr("value",data);
+        },
+        error: function(){
+			alert("인증번호 발송 실패");
+		}
+    });
+	}
+}
+
+function confirmNumber(){
+    let number1 = $("#number").val();
+    let number2 = $("#Confirm").val();
+
+    if(number1 == number2){
+		$('#number').css('border','0.5px solid green');
+		$('#number').tooltip('show');
+		$('#number').tooltip({'trigger':'hover', 'title':'인증번호가 일치합니다.'});
+		setTimeout(function() {
+	    $('#number').tooltip('dispose');
+	    }, 2000);
+        emailCheck = true;
+    }else{
+        $('#number').css('border','0.5px dotted orange');
+		$('#number').tooltip('show');
+		$('#number').tooltip({'trigger':'hover', 'title':'인증번호가 일치하지 않습니다.'});
+		setTimeout(function() {
+	    $('#number').tooltip('dispose');
+	    }, 2000);
+	    emailCheck = false;
+    }
+}
+function getCurrentDate() {
+	let currentDate = new Date();
+	let year = currentDate.getFullYear();
+	let month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+	let day = currentDate.getDate().toString().padStart(2, '0');
+	return year + '-' + month + '-' + day;
+}
+$(document).ready(function(){
+	let birthday = $('#reg-birthday');
+	birthday.attr('max', getCurrentDate());
+});
+$(document).ready(function() {
+  $('#show-password').change(function() {
+    let passwordInput = $('#reg-pass');
+    let confirm_passwordInput = $('#reg-pass-confirm');
+    if (this.checked) {
+      passwordInput.attr('type', 'text');
+      confirm_passwordInput.attr('type', 'text');
+    } else {
+      passwordInput.attr('type', 'password');
+      confirm_passwordInput.attr('type', 'password');
+    }
+  });
+});
+</script>
+</th:block>
+  </body>
+</html>

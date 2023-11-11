@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+ layout:decorate="layout/layout(title='로그인')">
+  <!-- Body-->
+	  <!-- Header -->
+    <head></head>
+  
+  <body>
+  <th:block layout:fragment="content">
+      <!-- Page Content-->
+      <div class="container padding-bottom-3x mb-2" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+          <div class="col-md-5">
+            <form class="login-box" id="form-account-login" name="f" method="post" >
+              <div class="row margin-bottom-1x">
+				  <a href="https://kauth.kakao.com/oauth/authorize?client_id=d389e2d0e8d22f91c546887352d72e46&redirect_uri=http://localhost/kakao_login_action&response_type=code">
+   					 <img width="400" src="images/kakao_login_medium_wide.png" alt="카카오 로고">
+				  </a>
+              </div>
+              <div class="form-group input-group">
+                <input class="form-control" placeholder="ID" name="userName" id="loginUserId"  required><span class="input-group-addon"><i class="icon-bell"></i></span>
+              </div>
+              <div class="form-group input-group">
+                <input class="form-control" type="password" placeholder="Password" name="password" id="loginPassword" required><span class="input-group-addon"><i class="icon-lock"></i></span>
+              </div>
+              <div class="d-flex flex-wrap justify-content-end padding-bottom-1x">
+                <div class="custom-control custom-checkbox">
+                  <input class="custom-control-input" type="checkbox" id="join_form" checked>
+                </div><a class="navi-link" href="/member_join_form">회원가입</a>
+                <div class="custom-control custom-checkbox">
+                  <input class="custom-control-input" type="checkbox" id="find_password" checked>
+                </div><a class="navi-link" href="/member_find_password_form">아이디/비밀번호 찾기</a>
+              </div>
+              <div class="text-center text-sm-right">
+                <button class="btn btn-primary margin-bottom-none" type="submit" id="login-action-btn">로그인</button>
+              </div>
+            </form>
+          </div>
+          </div>
+    </th:block>
+<th:block layout:fragment="script" >
+   <script type="text/javascript">
+	var account_login_action_rest=function(data){
+			$.ajax({
+    				url:'/member/login_rest',
+    				method:'POST',
+    				data:JSON.stringify(data),
+    				dataType: "json",
+    				contentType: 'application/json;chrset=UTF-8',
+    				success:function(resultJson){
+    					$('#loginUserId').tooltip('dispose');
+    					$('#loginPassword').tooltip('dispose');
+    					/*
+    		    		 * 0 아이디존재안함
+    		    		 * 1 패쓰워드불일치
+    		    		 * 2 패쓰워드일치(로그인성공)
+    		    		 */
+    		    		 if(resultJson.result==0){
+    		    			 $('#loginUserId').css('border','0.5px solid orange');
+    		    			 $('#loginUserId').tooltip({'trigger':'hover', 'title': resultJson.member.userName+' 는 존재하지않는 아이디입니다.'});
+    		    			 $('#loginUserId').tooltip('show');
+    		    		 }else if(resultJson.result==1){
+    		    			 $('#loginPassword').css('border','0.5px solid orange');
+    		    			 $('#loginPassword').tooltip({'trigger':'hover', 'title': '비밀번호가 일치하지않습니다.'});
+    		    			 $('#loginPassword').tooltip('show');
+    		    		 }else if(resultJson.result==2){
+    		    			 $('#form-account-login input').css('border','');
+    	    				 $('#loginUserId').tooltip('dispose');
+    	    				 $('#loginPassword').tooltip('dispose');
+    		    			 location.href='/index';
+    		    		 }
+    				},
+    				error:function(){
+    					location.href="/404";
+    				}
+    			});
+};
+   $(function(){
+		/**************회원로그인폼 보더삭제*********************/
+		$('#form-account-login').on('propertychange change keyup paste input',function(e){
+   		$('#form-account-login input').css('border','');
+   	});
+		/**********로그인submit버튼[ajax]************/
+		$('#form-account-login').on('submit',function(e){
+			e.preventDefault();
+			let loginId = $('#loginUserId').val();
+			let loginPassword = $('#loginPassword').val();
+			let data = {
+				"userName" : loginId, //안되면 ' ' 붙이기
+				"password" : loginPassword
+			}
+			//let params = $(e.target).serialize();
+			account_login_action_rest(data);
+		});
+	});
+</script>
+</th:block>
+  </body>
+</html>

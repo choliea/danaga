@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+ layout:decorate="layout/layout(title='Product Details')">
+<head>
+
+</head>
+<body>
+<th:block layout:fragment="content">
+		<!-- Page Content-->
+		<div class="container padding-bottom-3x mb-1">
+			<div class="row">
+				<!-- Poduct Gallery-->
+				<div class="col-md-6">
+					<div class="product-gallary" th:object="${productList}">
+						<div class="gallery-wrapper">
+						<img th:if="${productList.stock==0}" class="product-badge text-danger" src="images/sold-out.png" style="position: absolute; top: 0; left: 0; width: 70px; height: 70px; z-index: 10;">
+						</div>
+						<div class="product-carousel owl-carousel gallery-wrapper">
+								<img src="img/shop/single/01.jpg" alt="Product" th:src="@{*{pImage}}">
+						</div>
+					</div>
+				</div>
+				<!-- Product Info-->
+				<div class="col-md-6">
+					<form id="productOrderForm" method="get" action="/product_order_form">
+					<div class="padding-top-2x mt-2 hidden-md-up"></div>
+					<h2 class="padding-top-1x text-normal" th:text="'[품절]'+${productList.name}" th:if="${productList.stock==0}">Product Name</h2>
+					<h2 class="padding-top-1x text-normal" th:text="${productList.name}" th:unless="${productList.stock==0}">Product Name</h2>
+					<span class="h2 d-block" th:text="${#numbers.formatInteger(productList.totalPrice, 3, 'COMMA')}+'원'">가격</span>
+					<input type="hidden" name="optionSetId" id="optionSetId" th:value="${productList.osId}">
+					<div class="row margin-top-1x">
+						<div class="col-sm-4">
+							<div class="form-group">
+								<label for="otherOptions" >다른 옵션 보기</label>
+								<select class="form-control" id="otherOptions">
+									<option th:each="options:${otherOptions}" th:if="${!options.isInStock}" th:text="'[품절]'+${options.optionSetDesc}" th:value="${options.osId}" th:selected="${options.osId==productList.osId}" th:data-tooltip="'[품절]'+${options.optionSetDesc}">11.5</option>
+									<option th:each="options:${otherOptions}" th:unless="${!options.isInStock}" th:text="${options.optionSetDesc}" th:value="${options.osId}" th:selected="${options.osId==productList.osId}" th:data-tooltip="${options.optionSetDesc}">11.5</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-sm-3">
+							<div class="form-group">
+								<label for="qty">Quantity</label>
+								<select class="form-control" name="qty" id="qty">
+									<option>1</option>
+									<option>2</option>
+									<option>3</option>
+									<option>4</option>
+									<option>5</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<hr class="mb-3">
+					<div class="d-flex flex-wrap justify-content-between">
+						<div class="sp-buttons mt-2 mb-2">
+						
+							<button th:if="${isInterested==true}"
+									class="btn btn-outline-secondary btn-sm btn-wishlist active"
+									data-toggle="tooltip" th:product-heart="|${productList.osId}|"
+									title="Whishlist">
+									<i class="icon-heart" th:heart="|${productList.osId}|"></i>
+								</button>
+								<button th:unless="${isInterested==true}"
+									class="btn btn-outline-secondary btn-sm btn-wishlist"
+									 data-toggle="tooltip"
+									title="Whishlist" th:product-heart-yet="|${productList.osId}|">
+									<i class="icon-heart" th:heart="|${productList.osId}|"></i>
+								</button>
+							<button class="btn btn-primary" data-toast data-toast-type="success"
+								data-toast-position="topRight" data-toast-icon="icon-circle-check"
+								data-toast-title="Product" data-toast-message="successfuly added to cart!" th:data-optionSetId="${productList.osId}" data-cart-qty="1"><i
+									class="icon-bag"></i> Add to Cart</button>
+							<button class="btn btn-primary" th:toOrder="1" th:data-optionSetId="${productList.osId}" data-cart-qty="1"><i
+									class="icon-bag"></i> 주문하기</button>
+						</div>
+					</div>
+					</form>
+				</div>
+			</div>
+			<!-- Product Tabs-->
+			<div class="row padding-top-3x mb-3">
+				<div class="col-lg-10 offset-lg-1">
+					<ul class="nav nav-tabs" role="tablist">
+						<li class="nav-item"><a class="nav-link active" href="#description" data-toggle="tab"
+								role="tab">Description</a></li>
+						<li class="nav-item"><a class="nav-link" href="#specification" data-toggle="tab"
+								role="tab">Specification</a></li>
+					</ul>
+					<div class="tab-content">
+						<div class="tab-pane fade show active" id="description" role="tabpanel">
+							<img src="img/reviews/01.jpg" th:src="@{${productList.descImage}}" alt="Review author"
+								><!--상품설명이미지-->
+						</div>
+						<div class="tab-pane fade" id="specification" role="tabpanel">
+							<!-- 스펙 테이블 -->
+							<table class="table table-hover table-striped-columns">
+								<thead>
+									<tr>
+										<td th:text="${productList.name}">제품명</td>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="option : ${productList.optionSet}">
+										<td th:text="${option.name}">옵션명</td>
+										<td th:text="${option.value}">옵션값</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Related Products Carousel-->
+			<h3 class="text-center padding-top-2x mt-2 padding-bottom-1x">You May Also Like</h3>
+			<!-- Carousel-->
+			<div class="owl-carousel"
+				data-owl-carousel="{ &quot;nav&quot;: false, &quot;dots&quot;: true, &quot;margin&quot;: 30, &quot;responsive&quot;: {&quot;0&quot;:{&quot;items&quot;:1},&quot;576&quot;:{&quot;items&quot;:2},&quot;768&quot;:{&quot;items&quot;:3},&quot;991&quot;:{&quot;items&quot;:4},&quot;1200&quot;:{&quot;items&quot;:4}} }">
+				<!-- Product-->
+				<div class="grid-item" th:each="productDto:${hits}">
+					<div class="product-card">
+						<a class="product-thumb" href="product-detail.html" th:href="@{'/product'+${productDto.osId}}"><img
+								src="img/shop/products/09.jpg" alt="Product"
+								th:attr="src=@{${productDto.pImage}}"></a>
+						<h3 class="product-title" th:text="${productDto.name}"><a th:href="@{'/product'+${productDto.osId}}">상품명</a></h3>
+						<h4 class="product-price" th:text="${productDto.totalPriceString}+'원'">$34.99</h4>
+						<div class="product-buttons">
+							<button th:if="${productDto.isInterested}"
+									class="btn btn-outline-secondary btn-sm btn-wishlist active"
+									data-toggle="tooltip" th:product-heart="|${productDto.osId}|"
+									title="Whishlist">
+									<i class="icon-heart" th:heart="|${productDto.osId}|"></i>
+								</button>
+								<button th:unless="${productDto.isInterested}"
+									class="btn btn-outline-secondary btn-sm btn-wishlist"
+									 data-toggle="tooltip"
+									title="Whishlist" th:product-heart-yet="|${productDto.osId}|">
+									<i class="icon-heart" th:heart="|${productDto.osId}|"></i>
+								</button>
+							<button class="btn btn-outline-primary btn-sm" data-toast data-toast-type="success"
+								data-toast-position="topRight" data-toast-icon="icon-circle-check"
+								data-toast-title="Product" data-toast-message="successfuly added to cart!" th:data-optionSetId="${productDto.osId}">Add to
+								Cart</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<!--컨텐츠 끝-->
+
+
+	</th:block>
+	<th:block layout:fragment="script">
+	</th:block>
+</body>
+</html>

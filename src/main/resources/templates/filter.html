@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset='utf-8'>
+	<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	<title>Page Title</title>
+	<meta name='viewport' content='width=device-width, initial-scale=1'>
+	<link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+	<script src='main.js'></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+		integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+		crossorigin="anonymous"></script>
+</head>
+
+<body>
+	<th:block th:fragment="filter" th:remove="tag">
+		<div class="list-group col-lg-2">
+			<div th:each="category : ${categoryList}" style="max-height: 400px; overflow: auto;" >
+				<button type="button" class="list-group-item list-group-item-action border border-secondary"
+					th:attr="categoryId=${category.id}" th:text="${category.name}">
+					노트북
+				</button>
+			</div>
+		</div>
+
+		<div class="col-lg-2" id="subcategory-template-position">
+			<!---->
+		</div>
+
+		<div class="col-lg-6" id="option-choice-template-position">
+			<!---->
+		</div>
+
+
+		<!--script1-->
+		<script id="subcategory-template" type="text/x-handlebars-template">
+<div style="max-height: 400px; overflow: auto;"> 
+            <div data-spy="scroll" data-target="#sub-category-item list-group border border-secondary" data-offset="0">
+				<button type="button" class="list-group-item list-group-item-action border border-secondary"
+					sub-categoryId="{{data.[0].parentId}}" sub-categoryName="전체">
+					전체
+			</button>
+                {{#each data}}
+            <button type="button" class="list-group-item list-group-item-action border border-secondary"
+					sub-categoryId="{{id}}" sub-categoryName="{{name}}">
+					{{name}}
+			</button>
+                {{/each}}
+			</div>
+</div>
+  			</script>
+  				<!--script2-->
+  				<script id="option-choice-template-unique" type="text/x-handlebars-template">
+<div style="max-height: 400px; overflow: auto;">                
+<table id="search-option-table" class="search-option table table-striped">
+                    <tbody>
+                        {{#each data}}
+                        {{#each this}}
+                      <tr>
+                        <th scope="row" id="optionNameSearch"+{{@index}}>{{@key}}</th>
+                        <td>                             
+                            <div class="list-inline" data-spy="scroll" data-target="#navbar-example2" data-offset="0">
+                                 <div class="option form-check form-check-inline">
+									 {{#each this}}
+                                    <input class="form-check-input option" data-optionValue={{this}} type="checkbox" id="optionValueSearch"+{{@index}} value="{{this}}">
+                                    <label class="form-check-label" for="inlineCheckbox1">{{this}}</label>&nbsp;
+                                    {{/each}}
+                                  </div>
+                            </div>
+                      </td>
+                    </tr>
+                      {{/each}}
+                      {{/each}}
+                    </tbody>
+                  </table>
+</div>
+                </script>
+                <!---->
+  				
+	</th:block>
+</body>
+
+</html>

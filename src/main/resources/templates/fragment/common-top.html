@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head></head>
+
+<body>
+	<div th:fragment="common-top" th:remove="tag">
+
+
+		<!-- Off-Canvas Mobile Menu-->
+
+		<!-- Topbar-->
+
+		<!-- Navbar-->
+		<!-- Remove "navbar-sticky" class to make navigation bar scrollable with the page.-->
+		<header class="navbar navbar-sticky navbar-dark bg-dark">
+			<div class="site-branding">
+				<div class="inner">
+					<!-- Site Logo-->
+					<a class="site-logo" href="index"><img src="bootstrap/img/danaga_logo.png" alt="DANAGA.com"></a>
+				</div>
+			</div>
+			<!-- Main Navigation-->
+			<nav class="site-menu">
+				<ul>
+					<li th:classappend="${title == ''} ? 'has-megamenu active' : 'has-megamenu'" class="has-megamenu"><a href="index"><span>메인</span></a>
+					</li>
+					<li th:classappend="${title == 'Product'} ? 'has-megamenu active' : 'has-megamenu'" class="has-megamenu"><a href="/product"><span>제품</span></a></li>
+					<li th:classappend="${title == '장바구니'} ? 'has-megamenu active' : 'has-megamenu'" class="has-megamenu"><a href="/cart_list"><span>장바구니</span></a></li>
+					<li th:classappend="${title == '자유게시판' || title == '1:1문의'} ? 'has-children active' : 'has-children'" class="has-children"><a href="/board1"><span>게시판</span></a>
+						<ul class="sub-menu">
+							<li th:classappend="${title == '자유게시판'} ? 'has-megamenu active' : 'has-megamenu'" class="has-megamenu"><a href="/board1">자유게시판</a></li>
+							<li th:classappend="${title == '1:1문의'} ? 'has-megamenu active' : 'has-megamenu'" class="has-megamenu"><a href="/board2">1:1문의</a></li>
+						</ul>
+					</li>
+					<li th:classappend="${title == '공지사항' || title == 'FAQ'} ? 'has-children active' : 'has-children'" class="has-children"><a href="/board3"><span>공지사항/FAQ</span></a>
+						<ul class="sub-menu">
+							<li th:classappend="${title == 'FAQ'} ? 'has-megamenu active' : 'has-megamenu'" class="has-megamenu"><a href="/board3">FAQ</a></li>
+							<li th:classappend="${title == '공지사항'} ? 'has-megamenu active' : 'has-megamenu'" class="has-megamenu"><a href="/board4">공지사항</a></li>
+						</ul>
+					</li>
+					<li th:classappend="${title == '비회원 주문찾기'} ? 'has-megamenu active' : 'has-megamenu'" class="has-megamenu" th:if="${session.sUserId == null}"><a th:href="@{/find_order_guest}"><span>비회원 주문확인</span></a></li>
+				</ul>
+			</nav>
+
+			<!-- Toolbar-->
+			<div class="toolbar">
+				<div class="inner">
+					<div class="tools">
+						<div class="account" th:if="${session.role == 'Admin'}" onclick="window.location.href = '/admin';">
+							<i class="icon-open"></i>
+						</div>
+						<div class="account">
+							<a th:if="${session.sUserId != null}" th:href="@{/member_info_form}"></a>
+							<!-- Thymeleaf 조건문을 사용하여 sUserId가 null인 경우 로그인 페이지로 이동 -->
+							<a th:if="${session.sUserId == null}" th:href="@{/member_login_form}"></a><i
+								class="icon-head"></i>
+							<ul th:if="${session.sUserId != null}" class="toolbar-dropdown">
+								<li class="sub-menu-user">
+									<div class="user-ava"></div>
+									<div class="user-info">
+										<h6 class="user-name"></h6>
+									</div>
+								</li>
+								<li><a href="/member_info_form">내 정보</a></li>
+								<li><a href="/recentview">최근 본 상품</a></li>
+								<li><a href="/wishlist">관심 상품</a></li>
+								<li><a href="/member_order_List">주문 목록</a></li>
+								<li class="sub-menu-separator"></li>
+								<li><a href="/member_logout_action"> <i class="icon-unlock"></i>로그아웃
+									</a></li>
+							</ul>
+							<ul th:if="${session.sUserId == null}" class="toolbar-dropdown">
+								<li class="sub-menu-user">
+									<div class="user-ava"></div>
+									<div class="user-info">
+										<h6 class="user-name"></h6>
+									</div>
+								</li>
+								<li><a href="/member_login_form">로그인</a></li>
+								<li><a href="/member_join_form">회원가입</a></li>
+							</ul>
+						</div>
+						<div class="cart">
+							<a href="/cart_list"></a><i class="icon-bag"></i><span class="count"
+								th:text="${session.countCarts}">3</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</header>
+
+	</div>
+</body>
+
+</html>

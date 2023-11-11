@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="layout/layout(title=${board.title})" auto-config='true' use-expressions="true">
+<!-- Body-->
+<!-- Header -->
+
+<head>
+<headers>
+        <frame-options policy="SAMEORIGIN"/>
+    </headers>
+</head>
+
+
+<body>
+		<!-- Page Content-->
+	<th:block layout:fragment="content">
+		<!-- Main Slider-->
+		<section class="hero-slider" style="background-image: url(img/hero-slider/main-bg.jpg);">
+
+			<th:block layout:fragment="page-title(page_title=${board.title})">
+				<!-- Off-Canvas Wrapper-->
+				<div class="offcanvas-wrapper">
+					<!-- 생성완료,수정 메세지 보여주기-->
+					<div class="row" th:if="${msg !=null}">
+						<div class="col-sm-6">
+							<div class="iziToast iziToast-success">
+								<div class="iziToast-body" style="padding-left: 33px;"><i
+										class="iziToast-icon icon-circle-check"></i><strong>알림</strong>
+									<p th:text="${msg}">toast notification with icon</p>
+								</div>
+								<button class="iziToast-close"></button>
+							</div>
+						</div>
+					</div>
+					<div class="row" th:if="${upd !=null}">
+						<div class="col-sm-6">
+							<div class="iziToast">
+								<div class="iziToast-body"><strong>알림</strong>
+									<p th:text="${upd}">toast notification without icon</p>
+								</div>
+								<button class="iziToast-close"></button>
+							</div>
+						</div>
+					</div>
+
+					<div class="toolbar">
+						<div th:if="${board.userName} eq ${session.sUserId} or ${board.isAdmin} eq 2" th:remove="tag">
+							<a th:href="@{/board_edit{id} (id=${board.id})}" class="btn btn-primary">수정</a>
+							<a th:href="@{/board_delete{id} (id=${board.id})}" class="btn btn-danger">삭제</a>
+						</div>
+						<a th:href="@{/board{boardGroupId} (boardGroupId=${board.boardGroupId})}"
+							class="btn btn-primary">목록가기</a>
+					</div>
+					<div class="container padding-bottom-3x mb-2">
+						<div class="row">
+							<!-- Results-->
+							<div class="col-xl-12 col-lg-12">
+								<div class="card mb-4">
+<script>
+      // 2. This code loads the IFrame Player API code asynchronously.
+      var tag = document.createElement('script');
+
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      // 3. This function creates an <iframe> (and YouTube player)
+      //    after the API code downloads.
+      var player;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+          height: '360',
+          width: '640',
+          videoId: 'M7lc1UVf-VE',
+          events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+          }
+        });
+      }
+
+      // 4. The API will call this function when the video player is ready.
+      function onPlayerReady(event) {
+        event.target.playVideo();
+      }
+
+      // 5. The API calls this function when the player's state changes.
+      //    The function indicates that when playing a video (state=1),
+      //    the player should play for six seconds and then stop.
+      var done = false;
+      function onPlayerStateChange(event) {
+        if (event.data == YT.PlayerState.PLAYING && !done) {
+          setTimeout(stopVideo, 6000);
+          done = true;
+        }
+      }
+      function stopVideo() {
+        player.stopVideo();
+      }
+    </script>
+									<div class="card-header">
+										<h3>제목 : [[${board.title}]] </h3><span class="badge badge-pill badge-primary"
+											th:if="${board.readCount} &gt; 500" th:text="hot"></span>
+									</div>
+									<div class="card-body">
+										<div class="d-flex"><a class="pr-4 hidden-xs-down"
+												style="max-width: 225px;"><img src="/images/user_basic.jpg"
+													alt="user"></a>
+											<div>
+												<h5>작성자 : [[${board.nickname}]]</h5>
+												<hr>
+												<h6>작성일 : [[${#temporals.format(board.createTime,'yyyy-MM-dd
+													HH:mm:ss')}]]</h6>
+												<p> 내용 </p><br>
+												<div class="video-container" th:utext="${board.content}" id="content">
+													<div
+														style="position: relative; padding-bottom: 100%; height: 0; padding-bottom: 56.2493%;">
+														<iframe src="https://www.youtube.com/embed/${ videoId }"
+															style="position: absolute; width: 80%; height: 80%; top: 0; left: 0;"
+															frameborder="0" allow="autoplay; encrypted-media"
+															allowfullscreen>
+														</iframe>
+													</div>
+												</div>
+												<script>
+													// board.content에서 oembed 태그를 찾는 정규 표현식
+													const oembedRegex = /<oembed url="([^"]+)"><\/oembed>/;
+
+													// board.content에서 oembed 태그를 찾고 URL을 추출하여 iframe으로 대체
+													const contentElement = document.getElementById('content'); // board.content를 포함하는 요소
+													const content = contentElement.innerHTML;
+													const matches = content.match(oembedRegex);
+
+													if (matches) {
+														const oembedUrl = matches[1]; // oembed 태그 내의 URL 추출
+														const iframe = document.createElement('iframe');
+														iframe.width = '300';
+														iframe.height = '300';
+														iframe.src = oembedUrl; // URL을 iframe의 src로 설정
+														iframe.frameborder = '0';
+														iframe.allowfullscreen = true;
+
+														// board.content 내의 oembed 태그를 iframe으로 대체
+														contentElement.innerHTML = content.replace(matches[0], iframe.outerHTML);
+													}
+													const iframe = new IframeView();
+
+													iframe.render();
+													document.body.appendChild(iframe.element);
+
+													iframe.on('loaded', () => {
+														console.log('The iframe has loaded', iframe.element.contentWindow);
+													});
+
+													iframe.element.src = oembedUrl;
+												</script>
+											</div>
+										</div>
+										<a id="up-IsLike-btn" class="btn btn-outline-info"
+											th:onclick="upIsLike('IsLike')">
+											<span id="like-count" th:text="${board.isLike}">23913</span> &ensp;좋아요
+										</a>
+
+										<a id="up-DisLike-btn" class="btn btn-outline-danger"
+											th:onclick="upIsLike('DisLike')">
+											<span id="dislike-count" th:text="${board.disLike}">23913</span>
+											&ensp;싫어요
+										</a>
+
+										<script th:inline="javascript">
+											document.addEventListener("DOMContentLoaded", function () {
+												const upIsLikeBtn = document.getElementById("up-IsLike-btn");
+												const upDisLikeBtn = document.getElementById("up-DisLike-btn");
+
+												// 컨트롤러에서 받아온 초기 값
+												const initialLikeCount = '[[${board.isLike}]]';
+												const initialDislikeCount = '[[${board.disLike}]]';
+
+												// 초기 값으로 엘리먼트 설정
+												document.getElementById("like-count").innerText = initialLikeCount;
+												document.getElementById("dislike-count").innerText = initialDislikeCount;
+
+												upIsLikeBtn.addEventListener("click", function () {
+													upIsLike('IsLike');
+												});
+
+												upDisLikeBtn.addEventListener("click", function () {
+													upIsLike('DisLike');
+												});
+
+												function upIsLike(action) {
+													const boardId = '[[${board.id}]]';
+													const memberId = '[[${session.sUserId}]]';  
+
+													if (memberId === null) {
+														window.alert("로그인이 필요한 기능입니다.");
+														window.location.href = "member/member_login_form.html";
+														return;
+													}
+
+													const url = `/board/${boardId}/up${action}/${memberId}`;
+
+													// AJAX 요청
+													const xhr = new XMLHttpRequest();
+													xhr.open("PATCH", url, true);
+													xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+													xhr.onload = function () {
+														if (xhr.status === 200) {
+															const response = JSON.parse(xhr.responseText);
+															// 서버 응답이 OK일 경우 숫자 업데이트
+															if (action === 'IsLike') {
+																document.getElementById("like-count").innerText = response.isLike;
+															} else if (action === 'DisLike') {
+																document.getElementById("dislike-count").innerText = response.disLike;
+															}
+														} else {
+															console.error('서버 응답 오류:', xhr.responseText);
+														}
+													};
+
+													xhr.onerror = function () {
+														console.error('AJAX 오류:', xhr.status);
+													};
+
+													xhr.send(JSON.stringify({'memberId': memberId, 'boardId': boardId}));
+												}
+											});
+										</script>
+
+
+
+										<h3> 댓글</h3>
+										<hr>
+										<!-- 댓글 -->
+										<table class="table">
+											<thead>
+												<tr>
+													<th scope="col">번호</th>
+													<th scope="col">닉네임</th>
+													<th scope="col">내용</th>
+													<th scope="col"></th>
+												</tr>
+											</thead>
+											<tbody th:each="comments :${comments}">
+
+												<tr>
+													<td th:text="${comments.id}">번호</td>
+													<td th:text="${comments.writer}">닉네임</td>
+													<td th:text="${comments.content}">내용</td>
+													<!-- 각 댓글 아래에 "답글 달기"버튼을 추가  해당내용 없앰
+													<td>
+														<a class="btn btn-outline-info" data-bs-toggle="modal"
+															data-bs-target="#comment-reply-modal"
+															data-bs-id="${comments.id}">답글 달기</a>
+														<button class="btn btn-outline-warning" data-bs-toggle="modal"
+															data-bs-target="#comment-edit-modal"
+															data-bs-id="${comments.id}"
+															data-bs-nickname="${comments.writer}"
+															data-bs-body="${comments.content}"
+															data-bs-article-id="${comments.boardId}"
+															data-bs-pw="${comments.pw}">
+															수정
+														</button>
+														<button class="btn btn-outline-danger" 
+															data-bs-target="comment-delete-btn"
+															data-comment-id="${comments.id}"
+															data-comment-pw="${comments.pw}">삭제
+														</button> -->
+									</div>
+									</td>
+
+									</tr>
+									</tbody>
+									</table>
+									<div class="card m-2" id="comments-new" style="display: none;">
+										<div class="card-body">
+											<!-- 댓글 작성 폼 -->
+											<form>
+												<div class="mb-3">
+													<label class="form-label">닉네임</label>
+													<input class="form-control form-control-sm"
+														id="new-comment-nickname">
+												</div>
+												<div class="mb-3">
+													<label class="form-label">내용</label>
+													<textarea class="form-control form-control-sm" rows="3"
+														id="new-comment-body"> </textarea>
+												</div>
+												<div class="mb-3">
+													<label class="form-label">비밀번호</label>
+													<input class="form-control form-control-sm" type="password"
+														id="new-comment-pw">
+												</div>
+												<!-- 히든 인풋 -->
+												<th:block th:object="${board}">
+
+													<input type="hidden" id="new-comment-article-id"
+														th:value="${board.id}">
+												</th:block>
+
+												<button type="button" class="btn btn-outline-primary btn-sm"
+													id="comment-create-btn">작성</button>
+											</form>
+										</div>
+									</div>
+									<script type="text/javascript">
+										function toggleCommentForm() {
+											const commentsNewDiv = $("#comments-new");
+
+											if (commentsNewDiv.css("display") === "none") {
+												commentsNewDiv.css("display", "block"); // 댓글 작성 폼을 보이게 함
+											} else {
+												commentsNewDiv.css("display", "none"); // 댓글 작성 폼을 숨김
+											}
+										}
+									</script>
+
+									<script>
+										//댓글 생성 스크립트
+
+										//댓글 생성버튼을 변수화(id가 comment-create-btn)
+										const commentCreateBtn = document.querySelector("#comment-create-btn");
+
+										//버튼 클릭 시 이벤트를 감지
+										commentCreateBtn.addEventListener("click", function () {
+											//새 댓글 객체 생성
+											const comment = {
+												//id=document.querySelector("#").value,
+												writer: document.querySelector("#new-comment-nickname").value,
+												content: document.querySelector("#new-comment-body").value,
+												boardId: document.querySelector("#new-comment-article-id").value,
+												pw: document.querySelector("#new-comment-pw").value
+											};
+											//댓글 객체 출력
+											console.log(comment);
+											if (document.querySelector("#new-comment-nickname").value == null || document.querySelector("#new-comment-nickname").value == "") {
+												alert("사용할 닉네임을 입력해주세요");
+												return;
+											}
+											if (document.querySelector("#new-comment-body").value == null || document.querySelector("#new-comment-body").value == "") {
+												alert("댓글 내용이 비었습니다.");
+												return;
+											}
+											if (document.querySelector("#new-comment-pw").value == null || document.querySelector("#new-comment-body").value == "") {
+												alert("비밀번호 입력은 필수입니다.");
+												return;
+											}
+											//fetch()
+											const url = "/[[${board.id}]]/create_comment";
+											fetch(url, {
+												method: "POST",
+												body: JSON.stringify(comment), //comment JS객체를 제이슨형태의 데이터타입으로 전환
+												headers: {
+													"Content-Type": "application/json"
+												}
+
+											}).then(response => {
+												//http 응답 코드에 따른 메세지 출력
+												const msg = (response.ok) ? "댓글이 등록되었습니다." : "댓글 등록 실패!";
+												alert(msg);
+												//현재 페이지 새로고침.
+												window.location.reload();
+											});
+										});
+									</script>
+
+
+								</div>
+
+
+								<!-- modal event 처리 -->
+								<script>
+									// 모달 요소 선택
+									const commentEditModal = document.querySelector("#comment-edit-modal");
+									const commentCreateModal = document.querySelector("#comment-create-modal");
+									//모달 이벤트 감지 (대댓글생성)
+									commentCreateModal.addEventListener("show.bs.modal", function (event) {
+										const triggerBtn = event.relatedTarget;
+										const parantid = triggerBtn.getAttribute("data-bs-id");
+									});
+
+									//대댓글달기버튼
+									const commentReplyBtn = document.querySelector("#comment-enter-btn");
+
+									//출력 이벤트 감지 및 처리
+									commentCreateBtn.addEventListener("click", function () {
+										//대댓글 객체 생성
+										const comment = {
+											parentId: document.querySelector("#edit-comment-id").value,
+											writer: document.querySelector("#reply-comment-nickname").value,
+											content: document.querySelector("#reply-comment-body").value,
+											pw: document.querySelector("#reply-comment-pw").value,
+											boardId: document.querySelector("#reply-comment-article-id").value
+										}
+
+										console.log(comment);
+										//댓글생성 REST API 호출 -fetch()
+										const url = "/" + comment.boardId + "/create_comment"
+										fetch(url, {
+											method: "POST",
+											body: JSON.stringify(comment),//수정된 댓글 객체를 JSON데이터로 전달.
+											headers: {
+												"Content-Type": "application/json"
+											}
+
+										}).then(response => {
+											//http 응답 코드에 따른 메세지 출력
+											const msg = (response.ok) ? "댓글이 수정되었습니다." : "댓글 수정 실패!";
+											alert(msg);
+											//현재 페이지 새로고침.
+											window.location.reload();
+
+										});
+
+									});
+
+									commentEditModal.addEventListener("show.bs.modal", function (event) {
+										//console.log("모달이 열렸다~");
+										//트리거 버튼 선택
+										const triggerBtn = event.relatedTarget;
+
+										//데이터 가져오기
+										const id = triggerBtn.getAttribute("data-bs-id");
+										const nickname = triggerBtn.getAttribute("data-bs-nickname");
+										const body = triggerBtn.getAttribute("data-bs-body");
+										const article_id = triggerBtn.getAttribute("data-bs-article-id");
+
+										//데이터를 반영
+										document.querySelector("#edit-comment-id").value = id;
+										document.querySelector("#edit-comment-nickname").value = nickname;
+										document.querySelector("#edit-comment-body").value = body;
+										document.querySelector("#edit-comment-article-id").value = article_id;
+
+									});
+
+
+									//fetch()로 rest api데이터 전송
+									//수정 완료 버튼
+									const commentUpdateBtn = document.querySelector("#comment-update-btn");
+
+									//출력 이벤트 감지 및 처리
+									commentUpdateBtn.addEventListener("click", function () {
+										//수정댓글 객체 생성
+										const comment = {
+											id: document.querySelector("#edit-comment-id").value,
+											writer: document.querySelector("#edit-comment-nickname").value,
+											content: document.querySelector("#edit-comment-body").value,
+											boardId: document.querySelector("#edit-comment-article-id").value
+										}
+
+										//console.log(comment);
+										//수정 REST API 호출 -fetch()
+										const url = "/" + comment.id + "/edit_comment";
+										fetch(url, {
+											method: "PATCH", //PATCH요청 소문자 안됌.
+											body: JSON.stringify(comment),//수정된 댓글 객체를 JSON데이터로 전달.
+											headers: {
+												"Content-Type": "application/json"
+											}
+
+										}).then(response => {
+											//http 응답 코드에 따른 메세지 출력
+											const msg = (response.ok) ? "댓글이 수정되었습니다." : "댓글 수정 실패!";
+											alert(msg);
+											//현재 페이지 새로고침.
+											window.location.reload();
+
+										});
+
+									});
+
+								</script>
+
+								<!-- 삭제버튼 이벤트 처리 -->
+								<script>
+									//삭제 버튼 선택
+									let deleteBtns = document.querySelectorAll(".comment-delete-btn");
+
+									//각각의 삭제 버튼 이벤트 처리
+									deleteBtns.forEach(btn => {
+										btn.addEventListener("click", (event) => {
+											//이벤트 발생 요소를 선택.(즉 버튼을 가져오기)
+											const commentDeleteBtn = event.target; //event.target으로 대체가능
+
+											//삭제 댓글 id 가져오기
+
+											const commentId = commentDeleteBtn.getAttribute("data-comment-id");
+											const pw = commentDeleteBtn.getAttribute("data-comment-pw")
+											console.log(`삭제버튼 ${commentId} 번 댓글 클릭`);
+
+											if (window.confirm("정말 삭제할거유?")) {
+												//삭제 API호출 및 처리
+												const url = `/${commentId}/delete_comment`;
+												fetch(url, {
+													method: "DELETE",
+													body: JSON.stringify(commentId, pw)
+												}).then(response => {
+													//댓글 삭제 실패 처리
+													if (!response.ok) {
+														alert("댓글 삭제 실패!");
+														return;
+													}
+													//삭제 성공 시 , 댓글을 화면에서 지움
+													const target = document.querySelector(`#comments-${commentId}`);
+
+													target.remove();
+
+												});
+											} else {
+												window.location.reload();
+											}
+										});
+									}); 
+								</script>
+
+							</div>
+							<a class="btn btn-outline-info" id="toggle-comment-form" onclick="toggleCommentForm()">댓글
+								달기</a>
+							<!-- 요기에다가 myinfo넣어놓으면 좋을듯.-->
+						</div>
+					</div>
+
+		</section>
+
+	</th:block>
+	<th:block layout:fragment="recommendation"></th:block>
+	<th:block layout:fragment="script">
+	</th:block>
+	
+	<!-- comment Modal -->
+	<th:block layout:fragment="modal" >
+	
+		<!-- 댓글 수정모달-->
+		<div class="modal fade" id="comment-edit-modal" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="exampleModalLabel">댓글 수정</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<!-- 댓글 수정 폼 -->
+						<form>
+							<!-- 닉네임 입력 -->
+							<div class="mb-3">
+								<label class="form-label">닉네임</label>
+								<input class="form-control form-control-sm" id="edit-comment-nickname">
+							</div>
+							<!-- 댓글 본문 입력 -->
+							<div class="mb-3">
+								<label class="form-label">내용</label>
+								<textarea class="form-control form-control-sm" rows="3"
+									id="edit-comment-body"> </textarea>
+							</div>
+							<div class="mb-3">
+								<label class="form-label">비밀번호</label>
+								<input class="form-control form-control-sm" id="edit-comment-pw">
+							</div>
+
+							<!-- 히든 인풋 -->
+							<input type="hidden" id="edit-comment-id">
+							<input type="hidden" id="edit-comment-article-id">
+
+							<!-- 전송 버튼 -->
+							<button type="button" class="btn btn-outline-primary btn-sm" id="comment-update-btn">수정
+								완료</button>
+						</form>
+
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<!-- 대댓글 모달-->
+		<div class="modal fade" id="comment-reply-modal" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="exampleModalLabel">대댓글 달기</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<!-- 대댓글 생성 폼 -->
+						<form>
+							<!-- 닉네임 입력 -->
+							<div class="mb-3">
+								<label class="form-label">닉네임</label>
+								<input class="form-control form-control-sm" id="reply-comment-nickname">
+							</div>
+							<!-- 댓글 본문 입력 -->
+							<div class="mb-3">
+								<label class="form-label">내용</label>
+								<textarea class="form-control form-control-sm" rows="3"
+									id="reply-comment-body"> </textarea>
+							</div>
+							<div class="mb-3">
+								<label class="form-label">비밀번호</label>
+								<input class="form-control form-control-sm" id="reply-comment-pw">
+							</div>
+
+							<!-- 히든 인풋 -->
+							<input type="hidden" id="reply-comment-id">
+							<input type="hidden" id="reply-comment-article-id" >
+
+							<!-- 전송 버튼 -->
+							<button type="button" class="btn btn-outline-primary btn-sm"
+								id="comment-enter-btn">답글달기</button>
+						</form>
+
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+	</th:block>
+	
+</body>
+
+</html>

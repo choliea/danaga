@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="layout/layout(title=${boardGroupName})">
+<!-- Body-->
+<!-- Header -->
+
+<head>
+</head>
+
+<body>
+	<!-- Page Content-->
+	<th:block layout:fragment="content">
+		<!-- Main Slider-->
+		<section class="hero-slider" style="background-image: url(img/hero-slider/main-bg.jpg);">
+
+			<!-- Off-Canvas Wrapper-->
+			<div class="offcanvas-wrapper">
+				<!-- 생성,삭제,수정 메세지 보여주기-->
+				<div class="row" th:if="${msg !=null}">
+					<div class="col-sm-6">
+						<div class="iziToast iziToast-success">
+							<div class="iziToast-body" style="padding-left: 33px;"><i
+									class="iziToast-icon icon-circle-check"></i><strong>성공</strong>
+								<p th:text="${msg}">toast notification with icon</p>
+							</div>
+							<button class="iziToast-close"></button>
+						</div>
+					</div>
+				</div>
+				<!-- Page Title-->
+				<th:block layout:fragment="page-title(page_title=${boardGroupName})">
+					<!-- Page Content-->
+
+					<div class="container padding-bottom-3x mb-2">
+						<div class="row">
+							<div class="col-lg-4 col-md-8 order-md-2">
+								<h6 class="text-muted text-normal text-uppercase">인기 게시물</h6>
+								<div class="padding-top-2x mt-2 hidden-lg-up"></div>
+								<div class="table-responsive">
+									<table class="table table-hover margin-bottom-none">
+										<thead>
+											<tr>
+												<th>글 제목</th>
+												<th>조회수</th>
+												<th>좋아요</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr th:each="top : ${top10}">
+												<td><a class="text-medium navi-link" th:text="${top.title}"
+														th:href="@{/show{id}(id=${top.id})}">st 08, 2017</a></td>
+												<td><span class="text-large" th:text="${top.readCount}">Canceled</span>
+												</td>
+												<td><span class="text-medium" th:text="${top.isLike}">$760.50</span>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<script th:inline="javascript">
+								let memberId = '[[${session.sUserId}]]';
+
+								document.getElementById('change-write-page').addEventListener('click', function (event) {
+									if ('[[${session.sUserId}]]' === null || '[[${session.sUserId}]]' === "") {
+										window.alert("글쓰기는 로그인이 필요한 기능입니다.");
+
+										window.location.href = "member/member_login_form.html"; // 로그인 페이지로 리디렉션
+									}
+								});
+							</script>
+
+
+							<div class="col-lg-8 col-md-8 order-md-2">
+								<div class="text-right" id="change-write-page">
+									<td bgcolor="f4f4f4" height="22">
+										<form style="margin:0px" bgcolor="f4f4f4" height="22" action="board_list.html"
+											th:action="@{'/board' + ${boardGroupId}}">
+											<select id="searchType" name="searchType"
+												style="font-size:8.4pt;color: #333333;" bgcolor="f4f4f4" height="23">
+												<option th:value="'none'" selected>--검색선택--</option>
+												<option th:value="'title'" th:type="제목">제목</option>
+												<option th:value="'content'" th:type="내용">내용</option>
+												<option th:value="'userName'" th:type="닉네임">닉네임</option>
+											</select>
+											<input type="search" th:value="${searchKeyword}" name="searchKeyword"
+												placeholder="검색어를 입력하세여">
+											<input type="submit" value="검색">
+										</form>
+									</td>
+									<a class="btn btn-success" href="create.html"
+										th:href="@{/board_create{boardGroupId} (boardGroupId=${boardGroupId})}">글쓰기</a>
+								</div>
+								<h6 class="text-muted text-normal text-uppercase" th:if="${boardGroupId} eq 1">자유게시판
+								</h6>
+								<h6 class="text-muted text-normal text-uppercase" th:if="${boardGroupId} eq 2">1:1문의
+								</h6>
+								<h6 class="text-muted text-normal text-uppercase" th:if="${boardGroupId} eq 3">공지사항</h6>
+								<h6 class="text-muted text-normal text-uppercase" th:if="${boardGroupId} eq 4">자주묻는질문
+								</h6>
+								
+								<th:block th:with="pageSize=${boardList.pageable.pageSize},
+                    pageNumber=${boardList.pageable.pageNumber},
+                    totalPages=${boardList.totalPages},
+                    blockSize=${5},
+                    currentBlock=${T(java.lang.Math).ceil(boardList.pageable.pageNumber/blockSize)+1},
+                    blockBeginPage=${(currentBlock-1) * blockSize+1},
+                    blockEndPage=(${(blockBeginPage+blockSize-1) > totalPages ? totalPages:(blockBeginPage+blockSize-1)}),
+                    prevGroupStartPage=${T(java.lang.Math).round(blockBeginPage - blockSize)},
+                    nextGroupStartPage=${T(java.lang.Math).round(blockBeginPage + blockSize)}">
+									<hr class="margin-bottom-1x">
+									<div class="padding-top-2x mt-2 hidden-lg-up"></div>
+									<div class="table-responsive">
+										<table class="table table-inverse">
+											<thead>
+												<tr>
+													<th>NO</th>
+													<th>글 제목</th>
+													<th>내용</th>
+													<th>작성자</th>
+													<th>조회수</th>
+													<th>좋아요</th>
+													<th>작성일</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="list : ${boardList}">
+
+													<td><a class="text-medium navi-link" th:text="${list.id}"
+															th:href="@{/show{id}(id=${list.id})}">78A643CD409</a></td>
+													<td><a class="text-medium navi-link" th:text="${list.title}"
+															th:href="@{/show{id}(id=${list.id})}">st 08, 2017</a></td>
+													<td><a class="text-medium navi-link" th:utext="${list.content}"
+															th:href="@{/show{id}(id=${list.id})}">August 08, 2017</a>
+													</td>
+													<td class="text-large" th:text="${list.nickname}">August 08, 2017
+													</td>
+													<td><span class="text-danger"
+															th:text="${list.readCount}">Canceled</span>
+													</td>
+													<td><span class="text-large" th:text="${list.isLike}">$760.50</span>
+													</td>
+													<td><span class="text-large"
+															th:text="${#temporals.format(list.createTime,'yyyy-MM-dd HH:mm:ss')}">August
+															08, 2017</span></td>
+
+												</tr>
+											</tbody>
+										</table>
+									</div>
+									<table border="0" cellpadding="0" cellspacing="1" width="590">
+										<tr>
+											<td align="center">
+												<!-- 이전그룹 페이지로 이동 -->
+												<a th:if="${prevGroupStartPage > 0}"
+													th:href="@{'/board' + ${boardGroupId} + '?page=' + ${prevGroupStartPage} + '&searchKeyword=' + ${searchKeyword} + '&searchType=' + ${searchType}}">◀◀</a>
+												<a th:unless="${prevGroupStartPage > 0}" th:href="@{#}"
+													style="opacity: 0.5; pointer-events: none;">◀◀</a>
+												<!-- 이전 페이지로 이동 -->
+												<a th:if="${boardList.first}" th:href="@{#}"
+													style="opacity: 0.5; pointer-events: none;">◀</a>
+												<a th:unless="${boardList.first}"
+													th:href="@{'/board' + ${boardGroupId} + '?page=' + ${pageNumber} + '&searchKeyword=' + ${searchKeyword} + '&searchType=' + ${searchType}}">◀</a>
+												<th:block
+													th:each="page: ${#numbers.sequence(blockBeginPage, blockEndPage)}">
+													<a th:if="${page==pageNumber+1}" th:href="@{#}" th:text="${page}"
+														style="font-weight: bold;color:red;padding:5px 7px">3</a>
+													<a th:unless="${page==pageNumber+1}"
+														th:href="@{'/board' + ${boardGroupId} + '?page=' + ${page} + '&searchKeyword=' + ${searchKeyword} + '&searchType=' + ${searchType}}"
+														th:text="${page}"
+														style="font-weight: bold;padding:5px 7px">2</a>
+												</th:block>
+												<!-- 다음 페이지로 이동 -->
+												<a th:if="${boardList.last}" th:href="@{#}"
+													style="opacity: 0.5; pointer-events: none;">▶</a>
+												<a th:unless="${boardList.last}"
+													th:href="@{'/board' + ${boardGroupId} + '?page=' + ${pageNumber+2} + '&searchKeyword=' + ${searchKeyword} + '&searchType=' + ${searchType}}">▶</a>
+												<!-- 다음그룹 페이지로 이동 -->
+												<a th:if="${nextGroupStartPage > totalPages}" th:href="@{#}"
+													style="opacity: 0.5; pointer-events: none;">▶▶</a>
+												<a th:unless="${nextGroupStartPage > totalPages}"
+													th:href="@{'/board' + ${boardGroupId} + '?page=' + ${nextGroupStartPage} + '&searchKeyword=' + ${searchKeyword} + '&searchType=' + ${searchType}}">▶▶</a>
+											</td>
+
+
+										</tr>
+									</table>
+								</th:block>
+
+							</div>
+						</div>
+					</div>
+			</div>
+		</section>
+
+	</th:block>
+	<th:block layout:fragment="recommendation"></th:block>
+	<th:block layout:fragment="script">
+	</th:block>
+</body>
+
+</html>

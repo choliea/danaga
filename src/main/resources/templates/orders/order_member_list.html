@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="layout/layout(title='myOrders')">
+<!-- Body-->
+<!-- Header -->
+
+<head>
+
+
+<style>
+
+a {
+    color: black; /* 링크의 색상을 검정으로 설정합니다. */
+    text-decoration: none; /* 링크의 밑줄을 제거합니다. */
+}
+
+a:hover {
+    cursor: pointer; /* a 태그에 마우스를 가져다 대면 포인터 커서로 변경됩니다. */
+}
+
+</style>
+<style>
+.table tbody tr td {
+    background-color: #f5f5f5; /* 옅은 회색으로 설정하세요 */
+}
+</style>
+	    <style>
+        .table th {
+            background-color: #555;
+            color: #fff;
+        }
+    </style>
+
+	<style>
+		.modal-content {
+			margin-top: 100px;
+			/* 모달을 상단에서 50px 아래로 이동 */
+		}
+	</style>
+
+	<style>
+		button.btn {
+			display: block;
+    		margin: 0 auto;
+		
+		
+		
+			background-color: rgba(255, 255, 255, 0);
+			/* 배경색을 투명한 흰색으로 설정 */
+			border: none;
+			/* 테두리 제거 */
+			padding: 0;
+			/* 패딩 제거 */
+			text-decoration: none;
+			/* 밑줄 제거 */
+			cursor: pointer;
+			/* 커서를 포인터로 변경하여 클릭 가능하다는 표시 */
+			font-size: inherit;
+			/* 폰트 크기를 상속받음 */
+			color: #000;
+			/* 텍스트 색상 (예: 검은색) */
+			outline: none;
+			/* 포커스 효과 제거 */
+		}
+
+		button.btn:hover {
+			background-color: rgba(255, 255, 255, 0.7);
+			/* 마우스 오버시 미세하게 밝아지도록 설정 */
+		}
+	</style>
+</head>
+
+<body>
+
+	<th:block layout:fragment="modal">
+
+		<!-- Open Ticket Modal-->
+		<div class="modal" id="orderDetails" tabindex="-1">
+			<div class="modal-dialog  modal-xl">
+				<div class="modal-content">
+					<div class="modal-header">
+
+					</div>
+
+					<div class="modal-body"></div>
+					<div class="modal-footer"></div>
+				</div>
+			</div>
+		</div>
+
+
+
+	
+
+
+
+
+
+
+
+	</th:block>
+
+
+	<!-- Page Content-->
+	<!-- Main Slider-->
+	<th:block layout:fragment="content">
+		<div class="container padding-bottom-3x mb-2">
+			<div class="row">
+				<div class="col-lg-4" th:insert="~{mypage_component :: mypage(accountPage='member_order_List')}">
+
+				</div>
+				<div class="col-lg-8">
+					<div class="padding-top-2x mt-2 hidden-lg-up"></div>
+					<div class="table-responsive">
+						<table class="table table-hover margin-bottom-none">
+							<thead>
+								<tr>
+									<th>주문 번호</th>
+									<th>주문내역</th>
+									<th>주문상태</th>
+									<th>주문 가격</th>
+									<th>환불 및 취소</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="ordersDto : ${orderDtoList}" th:each-sort="${ordersDto.id}">
+									<td>
+										<button class="btn" data-bs-toggle="modal" data-bs-target="#orderDetails"
+											th:data-order-id="${ordersDto.id}">
+											<span th:text="${ordersDto.id}">주문번호</span>
+										</button>
+									</td>
+									
+									<td th:text="${ordersDto.getDescription()}" style="max-width: 150px;">주문 내역</td>
+									<td name="orderState" id="orderState" th:text="${ordersDto.getStateMsg()}">주문 상태
+									</td>
+									
+									<td th:text="|${#numbers.formatInteger(ordersDto.Price, 0, 'COMMA')}원|"><span class="text-medium">$760.50</span></td>
+									<td>
+										<button class="refund-button"
+											th:onclick="requestRefund([[${ordersDto.getId()}]], [[${ordersDto.getStateMsg()}]])">환불</button>
+
+										<button class="cancel-button"
+											th:onclick="cancelOrder([[${ordersDto.getId()}]])">취소</button>
+
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<hr>
+				</div>
+
+			</div>
+		</div>
+	</th:block>
+
+
+	<th:block layout:fragment="script">
+		<script th:inline="javascript">
+			function requestRefund(orderId, orderStatus) {
+				console.log('orderId=  ' + orderId);
+				if (orderStatus === '배송완료') {
+					let form = document.createElement('form');
+					form.method = 'GET';
+					form.action = '/refund_main_form' + orderId;
+					document.body.appendChild(form);
+					form.submit();
+				} else {
+					alert('주문상태가 배송완료 상태일때만 환불가능합니다.');
+				}
+			}
+
+			// 추가: 주문 상태에 따라 취소 버튼을 활성화 또는 비활성화
+			$(document).ready(function () {
+				$('tr').each(function () {
+					var orderStatus = $(this).find('#orderState').text().trim(); // 'orderState' ID를 사용합니다.
+					var cancelButton = $(this).find('.cancel-button');
+					var refundButton = $(this).find('.refund-button');
+
+					if (orderStatus === '입금대기중') {
+						// 주문 상태가 '배송준비중'인 경우 취소 버튼 활성화
+						cancelButton.prop('disabled', false);
+						refundButton.prop('disabled', true);
+					} else if (orderStatus === '배송완료') {
+						// 주문 상태가 '배송완료'인 경우 환불 버튼 활성화, 취소 버튼 비활성화
+						refundButton.prop('disabled', false);
+						cancelButton.prop('disabled', true);
+					} else {
+						// 나머지 상태인 경우 모두 비활성화
+						cancelButton.prop('disabled', true);
+						refundButton.prop('disabled', true);
+					}
+				});
+			});
+
+		</script>
+
+		<script th:inline="javascript">
+			var orderDetailsData;
+
+			$(document)
+				.ready(
+					function () {
+						$('.btn').click(function (e) {
+							e.preventDefault();
+							var orderId = $(this).data('order-id');
+							console.log("@@@@orderId: " + orderId);// 안들어가
+							requestOrderDetails(orderId);
+						});
+
+						function requestOrderDetails(orderId) {
+							$.ajax({
+									url: 'order/member_order_detail/' + orderId,
+									type: 'GET',
+									success: function (data) {
+										// 주문 상세 정보로 모달을 채웁니다.
+										var content = '<h4 class="modal-title">Order No - '
+											+ data.id + '</h4>';
+										content += '<div class="table-responsive shopping-cart mb-0">';
+										content += '<table class="table">';
+										content += '<thead><tr><th>제품 사진</th><th>제품 이름</th><th>제품 갯수</th><th>제품 가격</th></tr></thead>';
+										content += '<tbody>';
+										// 데이터에 따라서 테이블 내용을 추가하세요.
+										
+										
+										for (var i = 0; i < data.orderItemDtoList.length; i++) {
+											var orderItem = data.orderItemDtoList[i];
+											console.log('#########'+orderItem.pimage);
+											console.log('#########'+orderItem.productName);
+											console.log('#########'+orderItem.qty);
+											console.log('#########'+orderItem.totalPrice);
+
+											console.log('#########'+orderItem.orderId);
+											console.log('#########'+orderItem.osId);
+											console.log('#########'+orderItem.optionSet);
+											
+											var  realTotalPrice = orderItem.qty * orderItem.totalPrice;
+											
+											content += '<tr>';
+											content += '<td style="height: 100px;"><img src= ' + orderItem.pimage + ' alt="Product Image" class="img-fluid" style="max-height: 100px; max-width: 100px;"></a></td>';
+											content += '<td style="height: 100px;"><a href="http://localhost/product' + orderItem.osId + '"><span class="text-medium">'+ orderItem.productName + '</span></td>';
+											content += '<td style="height: 100px;"><span class="text-medium">' + orderItem.qty + '개</span></td>';
+											content += '<td style="height: 100px;"><span class="text-medium">' + realTotalPrice.toLocaleString() + '원</span></td>';
+											content += '</tr>';
+										}
+
+										content += '</tbody></table></div>';
+
+										$('.modal-body').html(
+											content);
+										var content1 = '<tfooter">';
+										var createDate = new Date(
+											data.createDate);
+										var formattedDate = createDate
+											.toLocaleString(
+												[],
+												{
+													year: 'numeric',
+													month: '2-digit',
+													day: '2-digit',
+													hour: '2-digit',
+													minute: '2-digit'
+												});
+										content1 += '<span class="text-medium" style="margin-right: 200px;"> 주문 날짜: '
+											+ formattedDate
+											+ '</span>';
+
+										content1 += '<span class="text-medium" style="margin-right: 50px;""> 주문 총가격: '
+											+ data.price.toLocaleString()
+											+ '원</span>';
+										content1 += '</tfooter>';
+										$('.modal-footer').html(
+											content1);
+										$('#orderDetails').modal(
+											'show'); // 모달을 표시합니다.
+									},
+									error: function (error) {
+										console
+											.error(
+												'주문 상세 정보를 불러오는 중 오류 발생:',
+												error);
+										// 여기에 오류 처리 로직을 추가하세요.
+									}
+								});
+						}
+
+					});
+		</script>
+
+		<script th:inline="javascript">
+			function cancelOrder(orderId) {
+				console.log(orderId);
+				$.ajax({
+					url: 'order/updateCancel' + orderId,
+					type: 'PUT',
+					success: function (data) {
+						console.log('Order canceled successfully:', data);
+						// 주문 취소 후 1초 뒤에 페이지 새로고침
+						setTimeout(function () {
+							location.reload();
+						}, 1000); // 1초 (1000 milliseconds)
+
+					},
+					error: function (error) {
+						console.error('Error canceling order:', error);
+						// 에러 처리 로직을 추가하세요.
+					}
+				});
+
+			}
+			
+
+			
+			
+			
+		</script>
+	</th:block>
+</body>
+
+</html>

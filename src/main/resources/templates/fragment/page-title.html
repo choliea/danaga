@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+	<!-- content start -->
+	<div class="page-title" th:fragment="page-title(page_title)">
+		<div class="container">
+			<div class="column">
+				<h1 th:text="${page_title}">title</h1>
+			</div>
+			<div class="column">
+				<ul class="breadcrumbs">
+					<li><a href="index">Home</a></li>
+					<li class="separator">&nbsp;</li>
+					<li th:text="${page_title}">title</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!-- content end   -->
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Body-->
+<!-- Header -->
+<div th:insert="include_common :: header"></div>
+<body>
+	<!-- Off-Canvas Wrapper-->
+	<div class="offcanvas-wrapper">
+		<!-- Page Content-->
+		<!-- Main Slider-->
+		<section class="hero-slider"
+			style="background-image: url(img/hero-slider/main-bg.jpg);">
+
+
+			<!-- Page Content-->
+			<div class="container padding-bottom-3x mb-2">
+				<div class="row">
+					<div class="col-lg-4"></div>
+					<div class="col-lg-8">
+						<div class="padding-top-2x mt-2 hidden-lg-up"></div>
+						<form class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="account-fn">배송주소</label> <br> <input
+										class="form-control" type="text" id="account-fn" value="배송주소"
+										required>
+								</div>
+							</div>
+						</form>
+						<form class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="account-ln">수령인</label> <input
+										class="form-control" type="text" id="account-ln"
+										value="수령인" required>
+								</div>
+							</div>
+						</form>
+
+
+
+					</div>
+				</div>
+			</div>
+
+
+		</section>
+		<div th:insert="include_common :: footer"></div>
+	</div>
+
+
+	<!-- Back To Top Button-->
+	<a class="scroll-to-top-btn" href="#"><i class="icon-arrow-up"></i></a>
+	<!-- Backdrop-->
+	<div class="site-backdrop"></div>
+	<!-- JavaScript (jQuery) libraries, plugins and custom scripts-->
+	<script src="/bootstrap/js/vendor.min.js"></script>
+	<script src="/bootstrap/js/scripts.min.js"></script>
+</body>
+</html>

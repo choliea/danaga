@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="layout/layout(title='비회원 주문찾기')">
+<!-- Body-->
+<!-- Header -->
+
+<head>
+
+</head>
+
+<body>
+	<!-- Page Content-->
+	<th:block layout:fragment="content">
+		<!-- Main Slider-->
+		<section class="hero-slider"
+			>
+			<!-- Find Guest Form-->
+
+
+
+			<form class="custom-section" th:object="${ordersGuestDetailDto}">
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label for="orderNo">주문번호</label> <input class="form-control"
+							type="text" id="orderNo" name="orderNo" value="orderNo" required
+							th:field="*{orderNo}">
+						<div id="orderNoError" class="error-message"
+							style="color: red; margin-left: 10px;"></div>
+					</div>
+
+					<!-- 주문번호 에러 메시지 -->
+				</div>
+
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label for="phoneNumber">주문자전화번호</label> <input
+							class="form-control" type="text" id="phoneNumber"
+							name="phoneNumber" value="phoneNumber" required
+							th:field="*{phoneNumber}">
+							<div id="phoneNumberError" class="error-message"
+							style="color: red; margin-left: 10px;"></div>
+					</div>
+					
+					<!-- 주문자전화번호 에러 메시지 -->
+				</div>
+
+
+				<hr class="padding-bottom-1x">
+
+				<div class="checkout-footer">
+					<div class="column">
+						<a class="btn btn-primary" href="#" onclick="guestOrderDetail()">
+							<span class="hidden-xs-down">주문찾기&nbsp;</span><i
+							class="icon-arrow-right"></i>
+						</a>
+						&nbsp;&nbsp;
+						
+						<span th:if="${notSame}" th:text="${notSame}" class="hide-on-hover" id="notSameElement"  style="color: red;"></span>
+					</div>
+				</div>
+			</form>
+
+
+		</section>
+
+	</th:block>
+
+
+	<th:block layout:fragment="script">
+		<script type="text/javascript">
+			function guestOrderDetail() {
+				let orderNo = $('#orderNo').val();
+				let phoneNumber = $('#phoneNumber').val();
+				let data = {
+						"orderNo": orderNo,
+						"phoneNumber": phoneNumber,
+						
+				}
+				// 에러 메시지 초기화
+				$('#orderNoError').text('');
+				$('#phoneNumberError').text('');
+
+				if (!orderNo) {
+					$('#orderNoError').text('주문번호가 입력되지 않았습니다.');
+					$('#orderNo').mouseenter(function() {
+						$('#orderNoError').text('');
+					});
+					return;
+				}
+				
+				if (isNaN(orderNo)) {
+					$('#orderNoError').text('주문번호는 숫자를 입력해야 됩니다.');
+					$('#orderNo').mouseenter(function() {
+						$('#orderNoError').text('');
+					});
+					return;
+				}
+				
+
+				if (!phoneNumber) {
+					$('#phoneNumberError').text('주문자전화번호가 입력되지 않았습니다.');
+					$('#phoneNumber').mouseenter(function() {
+						$('#phoneNumberError').text('');
+					});
+					return;
+				}
+				 if (!(phoneNumber.includes('-'))) {
+					$('#phoneNumberError').text('주문자전화번호의 양식이 잘못되었습니다.');
+					$('#phoneNumber').mouseenter(function() {
+						$('#phoneNumberError').text('');
+					});
+						return;
+					}
+				 
+		            if (data.error) {
+		                // 일치하지 않는 경우 에러 메시지 출력
+		                console.log(data.error);
+		                alert(data.error);
+		                return;
+		            }
+
+
+				    var form = document.createElement('form');
+				    form.method = 'GET';
+				    form.action = '/order_guest_detail';
+
+				    var orderNoInput = document.createElement('input');
+				    orderNoInput.type = 'hidden';
+				    orderNoInput.name = 'orderNo';
+				    orderNoInput.value = $('#orderNo').val();
+
+				    var phoneNumberInput = document.createElement('input');
+				    phoneNumberInput.type = 'hidden';
+				    phoneNumberInput.name = 'phoneNumber';
+				    phoneNumberInput.value = $('#phoneNumber').val();
+
+
+				    form.appendChild(orderNoInput);
+				    form.appendChild(phoneNumberInput);
+
+				    document.body.appendChild(form);
+				    console.log('@@@@@@@form: '+form);
+				    form.submit();
+				
+
+			}
+
+		</script>
+	</th:block>
+
+
+
+
+
+</body>
+
+</html>

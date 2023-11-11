@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+ layout:decorate="layout/layout(title='관심 상품')">
+<head>
+
+</head>
+<body>
+	<th:block layout:fragment="content">
+		<!-- Page Content-->
+		<div class="container padding-bottom-3x mb-2">
+			<div class="row">
+				<!--profile component-->
+				<div class="col-lg-4" th:insert="~{mypage_component :: mypage(accountPage='wishlist')}"></div>
+				<!--profile component 끝-->
+
+
+				<div class="col-lg-8">
+					<div class="padding-top-2x mt-2 hidden-lg-up"></div>
+					<div class="table-responsive wishlist-table margin-bottom-none">
+						<!-- Wishlist Table-->
+						<!-- 하위 태그들은 size==1이면 빈상자 이미지로 대체-->
+						<th:block th:insert="~{myProduct-component::product-table('wishlist')}"></th:block>
+							
+						<!-- Wishlist Table-->
+					</div>
+					<hr class="mb-4">
+				</div>
+			</div>
+		</div>
+
+
+		<!--컨텐츠 끝-->
+</th:block>
+<th:block layout:fragment="script"></th:block>
+</body>
+</html>

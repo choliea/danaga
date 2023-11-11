@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+   xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+   layout:decorate="layout/layout(title='환불신청완료')">
+<!-- Body-->
+<!-- Header -->
+
+<head>
+
+
+
+
+</head>
+
+<body>
+
+   <th:block layout:fragment="content">
+
+      <!-- Page Content-->
+      <div class="container padding-bottom-3x mb-2">
+         <div class="card text-center">
+            <div class="card-body padding-top-2x">
+               <p class="card-text">
+                  주문번호  <span
+                     class="text-medium" th:text="${orderId}"></span>
+                     의 환불 신청이 완료되었습니다. 
+               </p>
+
+               <div class="padding-top-1x padding-bottom-1x">
+                  <a class="btn btn-outline-secondary"
+                     onclick="orderCompleteToIndex()">Go Back Main</a>
+               </div>
+            </div>
+         </div>
+      </div>
+
+
+   </th:block>
+
+   <!-- Page Content-->
+
+
+   <!-- Main Slider-->
+
+
+
+   <th:block layout:fragment="script">
+
+      <script th:inline="javascript">
+         function orderCompleteToIndex() {
+            let form = document.createElement('form');
+            form.method = 'GET';
+            form.action = '/order_complete_to_index';
+            document.body.appendChild(form);
+            form.submit();
+         }
+      </script>
+
+
+   </th:block>
+
+
+
+
+</body>
+
+</html>

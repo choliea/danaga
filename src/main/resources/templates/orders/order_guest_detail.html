@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="layout/layout(title='비회원 주문 및 상세내역')">
+<!-- Body-->
+<!-- Header -->
+
+<head>
+
+<!-- 
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+		crossorigin="anonymous"></script>
+-->
+<style>
+.table tbody tr td {
+    background-color: #f5f5f5; /* 옅은 회색으로 설정하세요 */
+}
+</style>
+
+<style>
+.product-name:hover {
+    cursor: pointer;
+}
+</style>
+
+    <style>
+        .table th {
+            background-color: #555;
+            color: #fff;
+        }
+    </style>
+
+<style>
+
+
+.modal-content {
+	margin-top: 100px;
+	/* 모달을 상단에서 50px 아래로 이동 */
+}
+</style>
+
+<style>
+button.btn {
+	background-color: rgba(255, 255, 255, 0.5);
+	/* 배경색을 투명한 흰색으로 설정 */
+	border: none;
+	/* 테두리 제거 */
+	padding: 0;
+	/* 패딩 제거 */
+	text-decoration: none;
+	/* 밑줄 제거 */
+	cursor: pointer;
+	/* 커서를 포인터로 변경하여 클릭 가능하다는 표시 */
+	font-size: inherit;
+	/* 폰트 크기를 상속받음 */
+	color: #000;
+	/* 텍스트 색상 (예: 검은색) */
+	outline: none;
+	/* 포커스 효과 제거 */
+}
+
+button.btn:hover {
+	background-color: rgba(255, 255, 255, 0.7);
+	/* 마우스 오버시 미세하게 밝아지도록 설정 */
+}
+</style>
+
+</head>
+
+<body>
+	<th:block layout:fragment="modal">
+	
+	<!-- 모달 창 추가 -->
+<div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <img id="modalImage" src="" alt="Product Image" class="img-fluid">
+      </div>
+    </div>
+  </div>
+</div>
+	
+	
+	
+	
+	</th:block>
+
+	<!-- Page Content-->
+	<!-- Main Slider-->
+	<th:block layout:fragment="content">
+		<div class="container padding-bottom-3x mb-2">
+			<div class="row">
+
+				<div class="col-lg-10">
+					<div class="padding-top-2x mt-2 hidden-lg-up"></div>
+					<div class="table-responsive" >
+					<h4 class="text-center" >주문내역보기</h4>
+						<table class="table table-hover margin-bottom-none">
+							<thead>
+								<tr>
+									<th>주문 번호</th>
+									<th>주문내역</th>
+									<th>주문상태</th>
+									<th>주문 가격</th>
+									<th>환불 및 취소</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="ordersDto : ${ordersDtoList}"
+									th:each-sort="${ordersDto.id}">
+									<td th:text="${ordersDto.getId()}">주문 내역</td>
+									<td th:text="${ordersDto.getDescription()}">주문 내역</td>
+									<td name="orderState" id="orderState" th:text="${ordersDto.getStateMsg()}">주문 상태</td>
+									<td th:text="|${#numbers.formatInteger(ordersDto.Price, 0, 'COMMA')}원|"><span
+										class="text-medium">$760.50</span>
+										</td>
+									<td>
+										<button class="refund-button"
+											th:onclick="requestRefund([[${ordersDto.getId()}]], [[${ordersDto.getStateMsg()}]])">환불</button>
+										<button class="cancel-button"
+											th:onclick="cancelOrder([[${ordersDto.getId()}]])">취소</button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						</div>
+						<br><br><br>
+						<h4 class="text-center">주문상세보기</h4>
+						<table class="table table-hover margin-bottom-none">
+							<thead>
+								<tr>
+									<th>제품 사진</th>
+									<th>제품 이름</th>
+									<th>제품 개수</th>
+									<th>제품 가격</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="ordersItemDto: ${orderItemDtoList}">
+								
+									<td><img class="product-image" th:src="${ordersItemDto.getPImage()}" alt="제품 사진"
+										style="max-width: 50px; max-height: 50px;" /></td>
+									<td  class="product-name" th:text="${ordersItemDto.getProductName()}" th:attr="data-product-id=${ordersItemDto.getOsId()}"></td>
+									<td th:text="${ordersItemDto.getQty()}"></td>
+									<td th:text="|${#numbers.formatInteger(ordersItemDto.totalPrice, 0, 'COMMA')}원|"></td>
+								</tr>
+							</tbody>
+						</table>
+					
+					<hr>
+				</div>
+			</div>
+		</div>
+	</th:block>
+
+
+	<th:block layout:fragment="script">
+		<script th:inline="javascript">
+		function requestRefund(orderId,orderStatus) {
+			console.log('orderId=  ' + orderId);
+			if (orderStatus === '배송완료') {
+		        let form = document.createElement('form');
+		        form.method = 'GET';
+		        form.action = '/refund_main_form' + orderId;
+		        document.body.appendChild(form);
+		        form.submit();
+		        console.log('form submit됌');
+		    } else {
+		        alert('주문상태가 배송완료 상태일때만 환불가능합니다.');
+		    }
+		}
+		$(document).ready(function () {
+				$('tr').each(function () {
+					var orderStatus = $(this).find('#orderState').text().trim(); // 'orderState' ID를 사용합니다.
+					var cancelButton = $(this).find('.cancel-button');
+					var refundButton = $(this).find('.refund-button');
+
+					if (orderStatus === '입금대기중') {
+						// 주문 상태가 '배송준비중'인 경우 취소 버튼 활성화
+						cancelButton.prop('disabled', false);
+						refundButton.prop('disabled', true);
+					} else if (orderStatus === '배송완료') {
+						// 주문 상태가 '배송완료'인 경우 환불 버튼 활성화, 취소 버튼 비활성화
+						refundButton.prop('disabled', false);
+						cancelButton.prop('disabled', true);
+					} else {
+						// 나머지 상태인 경우 모두 비활성화
+						cancelButton.prop('disabled', true);
+						refundButton.prop('disabled', true);
+					}
+				});
+			});
+		</script>
+
+		<script th:inline="javascript">
+			function cancelOrder(orderId) {
+				console.log(orderId);
+				$.ajax({
+					url : 'order/updateCancel' + orderId,
+					type : 'PUT',
+					success : function(data) {
+						console.log('Order canceled successfully:', data);
+						// 주문 취소 후 1초 뒤에 페이지 새로고침
+						setTimeout(function() {
+							location.reload();
+						}, 1000); // 1초 (1000 milliseconds)
+
+					},
+					error : function(error) {
+						console.error('Error canceling order:', error);
+						// 에러 처리 로직을 추가하세요.
+					}
+				});
+
+			}
+			
+			
+			$(document).ready(function () {
+				  $('img.product-image').click(function () {
+				    var src = $(this).attr('src');
+				    $('#modalImage').attr('src', src);
+				    $('#productModal').modal('show');
+				  });
+				});
+			
+		</script>
+
+		<script th:inline="javascript">
+		    $(document).ready(function () {
+		        $('.product-name').click(function () {
+		            var productId = $(this).attr('data-product-id'); // 제품 ID를 가져옵니다.
+		            window.location.href = 'http://localhost/product' + productId; // 제품 상세보기 페이지로 이동합니다.
+		        });
+		    });
+		</script>
+
+
+	</th:block>
+
+
+
+
+</body>
+
+</html>

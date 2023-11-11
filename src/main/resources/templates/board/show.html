@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Body-->
+<!-- Header -->
+<div th:insert="include_common :: header"></div>
+
+<body>
+	<!-- 생성완료,수정 메세지 보여주기-->
+	<div class="row" th:if="${msg !=null}">
+		<div class="col-sm-6">
+			<div class="iziToast iziToast-success">
+				<div class="iziToast-body" style="padding-left: 33px;"><i
+						class="iziToast-icon icon-circle-check"></i><strong>성공</strong>
+					<p th:text="${msg}">toast notification with icon</p>
+				</div>
+				<button class="iziToast-close"></button>
+			</div>
+		</div>
+	</div>
+	<div class="row" th:if="${upd !=null}">
+		<div class="col-sm-6">
+			<div class="iziToast">
+				<div class="iziToast-body"><strong>Default</strong>
+					<p th:text="${upd}">toast notification without icon</p>
+				</div>
+				<button class="iziToast-close"></button>
+			</div>
+		</div>
+	</div>
+	<!-- Off-Canvas Wrapper-->
+	<div class="offcanvas-wrapper">
+		<!-- Page Content-->
+		<!-- Main Slider-->
+		<section class="hero-slider" style="background-image: url(img/hero-slider/main-bg.jpg);">
+			<div class="container padding-bottom-3x mb-2">
+				<div class="row">
+					<!-- Results-->
+					<div class="col-xl-9 col-lg-12">
+						<div class="card mb-4">
+							<div class="card-header">
+								<h3>제목 : [[${board.title}]] </h3><span class="badge badge-pill badge-primary"
+									th:if="${board.readCount} &gt; 500" th:text="hot">Product</span>
+							</div>
+							<div class="card-body">
+								<div class="d-flex"><a class="pr-4 hidden-xs-down" href="shop-single.html"
+										style="max-width: 225px;"><img src="img/shop/products/01.jpg" alt="Product"></a>
+									<div>
+										<h5>작성자 : [[${board.nickname}]]</h5>
+										<hr>
+										<h6>작성일 : [[${#temporals.format(board.createTime,'yyyy-MM-dd HH:mm:ss')}]]</h6>
+										<p> 내용 <br> <span class='text-highlighted' th:text="${board.content}">lorem
+												ipsum</span></p>
+									</div>
+								</div>
+								
+								<a id="up-IsLike-btn" class="btn btn-primary" onclick="upIsLike('IsLike')"> <span id="like-count" th:text="${board.isLike}">23913</span> &ensp;좋아요</a>
+								
+								<a id="up-DisLike-btn" class="btn btn-primary" onclick="upIsLike('DisLike')"> <span id="dislike-count" th:text="${board.disLike}">23913</span> &ensp;싫어요</a>
+
+<script th:inline="javascript">
+    const upIsLikeBtn = $('#up-IsLike-btn');
+    const upDisLikeBtn = $("#up-DisLike-btn");
+
+    // 컨트롤러에서 받아온 초기 값
+    const initialLikeCount = '[[${board.isLike}]]';
+    const initialDislikeCount = '[[${board.disLike}]]';
+
+    // 초기 값으로 엘리먼트 설정
+    $("#like-count").text(initialLikeCount);
+    $("#dislike-count").text(initialDislikeCount);
+
+    upIsLikeBtn.click(function() {
+        upIsLike('IsLike');
+    });
+
+    upDisLikeBtn.click(function() {
+        upIsLike('DisLike');
+    });
+
+    function upIsLike(action) {
+        const boardId = '1'; // 여기에 게시물 ID를 동적으로 설정
+        const memberId = '1'; // 여기에 회원 ID를 동적으로 설정
+
+        // AJAX 요청
+        $.ajax({
+            type: 'PATCH',
+            url: `/board/${boardId}/up${action}/${memberId}`,
+            data: { 'memberId': memberId, 'boardId': boardId },
+            success: function (response) {
+                if (response) {
+                    // 서버 응답이 OK일 경우 숫자 업데이트
+                    if (action === 'IsLike') {
+                        $("#like-count").text(response.isLike);
+                    } else if (action === 'DisLike') {
+                        $("#dislike-count").text(response.disLike);
+                    }
+                } else {
+                    console.error('서버 응답 오류:', response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('AJAX 오류:', error);
+            }
+        });
+    }
+</script>
+
+
+
+							</div>
+							<h3> 댓글</h3>
+							<hr>
+							<!-- 댓글 -->
+							<table class="table">
+								<thead>
+									<tr>
+										<th scope="col">번호</th>
+										<th scope="col">작성자</th>
+										<th scope="col">내용</th>
+									</tr>
+								</thead>
+								<tbody th:each="comments :${commentList}">
+
+									<tr>
+										<th th:text="${comments.id}">번호</th>
+										<th th:text="${comments.writer}">닉네임</th>
+										<th th:text="${comments.content}">내용</th>
+									</tr>
+
+								<tbody>
+							</table>
+
+							<div class="toolbar">
+								<a th:href="@{/board/{boardId}/edit (boardId=${board.id})}"
+									class="btn btn-primary">수정</a>
+								<a th:href="@{/board/{boardId}/delete (boardId=${board.id})}"
+									class="btn btn-danger">삭제</a>
+								<a th:href="@{/board/list/{boardGroupId} (boardGroupId=${board.boardGroupId})}"
+									class="btn btn-primary">목록가기</a>
+							</div>
+
+							<div id="comments-list">
+								<th:block th:each="comments : ${commentList}">
+
+									<div class="card m-2" id="comments-${comments.id}">
+										<div class="card-header">
+											[[${comments.writer}]]
+											<!-- Button trigger modal -->
+											<button type="button" class="btn btn-sm btn-outline-primary"
+												data-bs-toggle="modal" data-bs-target="#comment-edit-modal"
+												data-bs-id="${comments.id}" data-bs-nickname="${comments.writer}"
+												data-bs-body="${comments.title}"
+												data-bs-article-id="${comments.boardId}">
+												수정
+											</button>
+											<button type="button"
+												class="btn btn-sm btn-outline-danger comment-delete-btn"
+												data-comment-id="${comments.id}">삭제</button>
+										</div>
+										<div class="card-body">
+											[[${body}]]
+										</div>
+									</div>
+								</th:block>
+
+							</div>
+
+
+							<!-- Modal -->
+							<div class="modal fade" id="comment-edit-modal" tabindex="-1">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h1 class="modal-title fs-5" id="exampleModalLabel">댓글 수정</h1>
+											<button type="button" class="btn-close" data-bs-dismiss="modal"
+												aria-label="Close"></button>
+										</div>
+										<div class="modal-body">
+											<!-- 댓글 수정 폼 -->
+											<form>
+												<!-- 닉네임 입력 -->
+												<div class="mb-3">
+													<label class="form-label">닉네임</label>
+													<input class="form-control form-control-sm"
+														id="edit-comment-nickname">
+												</div>
+												<!-- 댓글 본문 입력 -->
+												<div class="mb-3">
+													<label class="form-label">내용</label>
+													<textarea class="form-control form-control-sm" rows="3"
+														id="edit-comment-body"> </textarea>
+												</div>
+
+												<!-- 히든 인풋 -->
+												<input type="hidden" id="edit-comment-id">
+												<input type="hidden" id="edit-comment-article-id">
+
+												<!-- 전송 버튼 -->
+												<button type="button" class="btn btn-outline-primary btn-sm"
+													id="comment-update-btn">수정 완료</button>
+											</form>
+
+										</div>
+
+									</div>
+								</div>
+							</div>
+
+							<!-- modal event 처리 -->
+							<script>
+
+
+								// 모달 요소 선택
+								const commentEditModal = document.querySelector("#comment-edit-modal");
+
+								//모달 이벤트 감지
+								commentEditModal.addEventListener("show.bs.modal", function (event) {
+									//console.log("모달이 열렸다~");
+									//트리거 버튼 선택
+									const triggerBtn = event.relatedTarget;
+
+									//데이터 가져오기
+									const id = triggerBtn.getAttribute("data-bs-id");
+									const nickname = triggerBtn.getAttribute("data-bs-nickname");
+									const body = triggerBtn.getAttribute("data-bs-body");
+									const article_id = triggerBtn.getAttribute("data-bs-article-id");
+
+									//데이터를 반영
+									document.querySelector("#edit-comment-id").value = id;
+									document.querySelector("#edit-comment-nickname").value = nickname;
+									document.querySelector("#edit-comment-body").value = body;
+									document.querySelector("#edit-comment-article-id").value = article_id;
+
+								});
+
+
+								//fetch()로 rest api데이터 전송
+								//수정 완료 버튼
+								const commentUpdateBtn = document.querySelector("#comment-update-btn");
+
+								//출력 이벤트 감지 및 처리
+								commentUpdateBtn.addEventListener("click", function () {
+									//수정댓글 객체 생성
+									const comment = {
+										id: document.querySelector("#edit-comment-id").value,
+										nickname: document.querySelector("#edit-comment-nickname").value,
+										body: document.querySelector("#edit-comment-body").value,
+										article_id: document.querySelector("#edit-comment-article-id").value
+									}
+
+									//console.log(comment);
+									//수정 REST API 호출 -fetch()
+									const url = "/api/comments/" + comment.id
+									fetch(url, {
+										method: "PATCH", //PATCH요청 소문자 안됌.
+										body: JSON.stringify(comment),//수정된 댓글 객체를 JSON데이터로 전달.
+										headers: {
+											"Content-Type": "application/json"
+										}
+
+									}).then(response => {
+										//http 응답 코드에 따른 메세지 출력
+										const msg = (response.ok) ? "댓글이 수정되었습니다." : "댓글 수정 실패!";
+										alert(msg);
+										//현재 페이지 새로고침.
+										window.location.reload();
+
+									});
+
+								});
+
+							</script>
+
+							<!-- 삭제버튼 이벤트 처리 -->
+							<script>
+								//삭제 버튼 선택
+								let deleteBtns = document.querySelectorAll(".comment-delete-btn");
+
+								//각각의 삭제 버튼 이벤트 처리
+								deleteBtns.forEach(btn => {
+									btn.addEventListener("click", (event) => {
+										//이벤트 발생 요소를 선택.(즉 버튼을 가져오기)
+										const commentDeleteBtn = event.srcElement; //event.target으로 대체가능
+
+										//삭제 댓글 id 가져오기
+
+										const commentId = commentDeleteBtn.getAttribute("data-comment-id");
+										console.log(`삭제버튼 ${commentId} 번 댓글 클릭`);
+
+										if (window.confirm("정말 삭제할거유?")) {
+											//삭제 API호출 및 처리
+											const url = `/api/comments/${commentId}`;
+											fetch(url, {
+												method: "DELETE",
+
+											}).then(response => {
+												//댓글 삭제 실패 처리
+												if (!response.ok) {
+													alert("댓글 삭제 실패!");
+													return;
+												}
+												//삭제 성공 시 , 댓글을 화면에서 지움
+												const target = document.querySelector(`#comments-${commentId}`);
+
+												target.remove();
+
+											});
+										} else {
+											window.location.reload();
+										}
+									});
+								}); 
+							</script>
+
+							<div class="card m-2" id="comments-new">
+								<div class="card-body">
+									<!-- 댓글 작성 폼 -->
+									<form>
+										<div class="mb-3">
+											<label class="form-label">닉네임</label>
+											<input class="form-control form-control-sm" id="new-comment-nickname">
+										</div>
+										<div class="mb-3">
+											<label class="form-label">내용</label>
+											<textarea class="form-control form-control-sm" rows="3"
+												id="new-comment-body"> </textarea>
+										</div>
+
+										<!-- 히든 인풋 -->
+										<th:block th:object="${board}">
+
+											<input type="hidden" id="new-comment-article-id" value="${board.id}">
+										</th:block>
+
+										<button type="button" class="btn btn-outline-primary btn-sm"
+											id="comment-create-btn">작성</button>
+									</form>
+								</div>
+
+							</div>
+
+							<script>
+
+								//댓글 생성버튼을 변수화(id가 comment-create-btn)
+								const commentCreateBtn = document.querySelector("#comment-create-btn");
+
+								//버튼 클릭 시 이벤트를 감지
+								commentCreateBtn.addEventListener("click", function () {
+									//새 댓글 객체 생성
+									const comment = {
+										nickname: document.querySelector("#new-comment-nickname").value,
+										body: document.querySelector("#new-comment-body").value,
+										article_id: document.querySelector("#new-comment-article-id").value
+									};
+									//댓글 객체 출력
+									console.log(comment);
+									if (document.querySelector("#new-comment-nickname").value == null || document.querySelector("#new-comment-nickname").value == "") {
+										alert("사용할 닉네임을 입력해주세요");
+										return;
+									}
+									if (document.querySelector("#new-comment-body").value == null || document.querySelector("#new-comment-body").value == "") {
+										alert("댓글 내용이 비었습니다.");
+										return;
+									}
+									//fetch() -Talend API 요청을 자바스크립트로 보내줌.
+									const url = "/api/articles/" + comment.article_id + "/comments";
+									fetch(url, {
+										method: "POST",
+										body: JSON.stringify(comment), //comment JS객체를 제이슨형태의 데이터타입으로 전환
+										headers: {
+											"Content-Type": "application/json"
+										}
+
+									}).then(response => {
+										//http 응답 코드에 따른 메세지 출력
+										const msg = (response.ok) ? "댓글이 등록되었습니다." : "댓글 등록 실패!";
+										alert(msg);
+										//현재 페이지 새로고침.
+										window.location.reload();
+									});
+								});
+							</script>
+		</section>
+		<div th:insert="include_common :: footer"></div>
+	</div>
+
+
+	<!-- Back To Top Button-->
+	<a class="scroll-to-top-btn" href="#"><i class="icon-arrow-up"></i></a>
+	<!-- Backdrop-->
+	<div class="site-backdrop"></div>
+	<!-- JavaScript (jQuery) libraries, plugins and custom scripts-->
+	<script src="/bootstrap/js/vendor.min.js"></script>
+	<script src="/bootstrap/js/scripts.min.js"></script>
+	<script src="/bootstrap/js/card.min.js"></script>
+	<script src="/bootstrap/js/modernizr.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="layout/layout(title='주문이 완료됐습니다!!')">
+<!-- Body-->
+<!-- Header -->
+
+<head>
+
+
+
+
+</head>
+
+<body>
+
+	<th:block layout:fragment="content">
+
+		<!-- Page Content-->
+		<div class="container padding-bottom-3x mb-2">
+			<div class="card text-center">
+				<div class="card-body padding-top-2x">
+					<h3 class="card-title">주문해주셔서 감사합니다!</h3>
+
+					<p class="card-text">
+						회원님의 주문번호는 <span class="text-medium" id="orderId" th:text="${orderId}"></span>
+						번 입니다.
+					</p>
+					<p class="card-text">
+						입력하신 이메일인 <span class="text-medium" id="email" th:text="${email}"></span>
+						로 주문번호 발송하였습니다. 
+					</p>
+
+					<div class="padding-top-1x padding-bottom-1x">
+						<a class="btn btn-outline-secondary" onclick="orderFunction()">주문번호 발송</a>
+					</div>
+					<div class="padding-top-1x padding-bottom-1x">
+						<a class="btn btn-outline-secondary" onclick="orderCompleteToIndex()">Go Back Main</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+	</th:block>
+
+	<!-- Page Content-->
+
+
+	<!-- Main Slider-->
+
+
+
+	<th:block layout:fragment="script">
+
+		<script th:inline="javascript">
+			function orderCompleteToIndex() {
+				
+				let form = document.createElement('form');
+				form.method = 'GET';
+				form.action = '/order_complete_to_index';
+				document.body.appendChild(form);
+				
+				form.submit();
+				
+			}
+			function orderFunction(){
+				let email = $("#email").text();
+				console.log('####333'+email);
+				$.ajax({
+				url: "/sendOrderIdemailauthentication",
+				type: "post",
+				dataType: "json",
+				data: {"mail": $("#email").text()},
+				success: function (data) {
+					alert("주문번호 발송");
+				},
+				error: function () {
+					alert("주문번호 발송 실패");
+				}
+				
+			});
+			}
+			
+		</script>
+
+
+	</th:block>
+
+
+
+
+</body>
+
+</html>

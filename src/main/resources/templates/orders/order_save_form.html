@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="layout/layout(title='Order')">
+<!-- Body-->
+<!-- Header -->
+
+<head>
+	<style>
+		.error-message {
+			color: red;
+			/* 빨간색 텍스트 색상 */
+			font-size: 12px;
+			/* 원하는 폰트 크기 설정 */
+			text-align: center;
+			/* 오른쪽 정렬 */
+		}
+	</style>
+</head>
+
+<body>
+	<!-- Page Content-->
+	<th:block layout:fragment="content">
+		<!-- Main Slider-->
+
+		<div class="container padding-bottom-3x mb-2">
+			<div class="row">
+				<!-- Checkout Adress-->
+				<!-- Order Form-->
+				<div class="col-xl-9 col-lg-8 order-lg-first">
+					<div class="table-responsive" style="margin-left: -150px; width: 120%;">
+						<table class="table" style="margin: 0 auto;">
+							<thead class="thead-inverse">
+								<tr>
+									<th style="width: 500px; white-space: nowrap; text-align: center; border: 1px solid #ccc;">상품
+										번호</th>
+									<th style="width: 500px; white-space: nowrap; text-align: center; border: 1px solid #ccc;">상품
+										이름</th>
+									<th style="width: 500px; white-space: nowrap; text-align: center; border: 1px solid #ccc;">수량</th>
+									<th style="width: 500px; white-space: nowrap; text-align: center; border: 1px solid #ccc;">결제금액</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="item : ${sUserCartOrderDto}">
+									<td style="width: 500px; text-align: center; border: 1px solid #ccc; border-radius: 10px; background-color: #f5f5f5" th:text="${item.id}">112</td>
+									<td style="width: 500px; white-space: nowrap; text-align: center; border: 1px solid #ccc; border-radius: 10px; background-color: #f5f5f5"
+										th:text="${item.productName}">좋은 컴퓨터 외 5개</td>
+									<td style="width: 500px; white-space: nowrap; text-align: center; border: 1px solid #ccc; border-radius: 10px; background-color: #f5f5f5"
+										th:text="${item.qty}">2023.10.15</td>
+									<td style="width: 500px; white-space: nowrap; text-align: center; border: 1px solid #ccc; border-radius: 10px; background-color: #f5f5f5">
+										<span class="price" th:text="|${#numbers.formatInteger(item.totalPrice * item.qty, 0, 'COMMA')}원|"></span> 
+									</td>
+								</tr>
+								<tr>
+									<td colspan="4" style="text-align: center;">
+										<strong>총가격:</strong>
+									<strong class="text-medium" th:text="|${#numbers.formatInteger(realTotalPrice, 0, 'COMMA')}원|"></strong>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<form id="orderAction" name="orderAction" method="post" action="/cart_order_action">
+						<div class="custom-section">
+							<div id="ordererNameError" class="error-message"></div>
+							<div class="col-sm-8">
+								<div class="form-group" style="display: flex; align-items: center;">
+									<label for="checkout-ordererName"
+										style="flex: 1; text-align: right; margin-right: 1rem; pointer-events: none;">주문자</label>
+									<input class="form-control" type="text" id="ordererName" name="ordererName"
+										style="flex: 2; width: 80%;" value=""
+										th:value="${orderMemberBasicDto.userName}">
+								</div>
+								<div class="error-message" id="ordererNameError"></div>
+							</div>
+						</div>
+
+						<div class="custom-section">
+							<div id="ordererError" class="error-message"></div>
+							<div class="col-sm-8">
+								<div class="form-group" style="display: flex; align-items: center;">
+									<label for="checkout-ordererPhoneNo"
+										style="flex: 1; text-align: right; margin-right: 1rem; pointer-events: none;">주문자전화번호</label>
+									<input class="form-control" type="text" id="ordererPhoneNo" name="ordererPhoneNo"
+										style="flex: 2; width: 80%;" value="ex) 010-1111-1111"
+										th:value="${orderMemberBasicDto.phoneNo}">
+								</div>
+							</div>
+						</div>
+						<div class="custom-section">
+							<div id="ordererErrorEmail" class="error-message"></div>
+							<div class="col-sm-8">
+								<div class="form-group" style="display: flex; align-items: center;">
+									<label for="checkout-ordererEmail"
+										style="flex: 1; text-align: right; margin-right: 1rem; pointer-events: none;">주문자이메일</label>
+									<input class="form-control" type="text" id="ordererEmail" name="ordererEmail"
+										style="flex: 2; width: 80%;" value="aaa@naver.com"
+										th:value="${orderMemberBasicDto.email}">
+								</div>
+							</div>
+						</div>
+
+						<div class="custom-section">
+							<div id="receiverNameError" class="error-message"></div>
+							<div class="col-sm-8">
+								<div class="form-group" style="display: flex; align-items: center;">
+									<label for="checkout-receiverName"
+										style="flex: 1; text-align: right; margin-right: 1rem; pointer-events: none;">수령인</label>
+									<input class="form-control" type="text" id="receiverName" name="receiverName"
+										style="flex: 2; width: 80%;" value="">
+								</div>
+							</div>
+						</div>
+
+						<div class="custom-section">
+							<div id="receiverError" class="error-message"></div>
+							<div class="col-sm-8">
+								<div class="form-group" style="display: flex; align-items: center;">
+									<label for="checkout-receiverPhoneNo"
+										style="flex: 1; text-align: right; margin-right: 1rem; pointer-events: none;">수령인전화번호</label>
+									<input class="form-control" type="text" id="receiverPhoneNo" name="receiverPhoneNo"
+										style="flex: 2; width: 80%;" value="ex) 010-1111-1111">
+								</div>
+							</div>
+						</div>
+						<div class="custom-section">
+							<div class="col-sm-10">
+								<div class="form-group">
+									<label for="reg-address" style="display: block; text-align: center; font-size: 1.1em;">주소 입력</label><br>
+									<input name="receiverPostCode" type="text" class="form-control"
+										id="receiverPostCode" placeholder="우편번호" required>
+									<input name="findaddr" type="button" class="form-control"
+										onclick="execDaumPostcode()" value="우편번호 찾기" style="background-color: #555; color: #fff;"><br>
+									<input name="receiverAddress" type="text" class="form-control" id="receiverAddress"
+										placeholder="주소" required>
+										<br>
+									<input name="receiverDetailAddress" type="text" class="form-control"
+										id="receiverDetailAddress" placeholder="상세주소" required>
+										<br>
+
+								</div>
+							</div>
+						</div>
+
+						<div class="custom-section">
+							<div class="col-sm-8">
+								<div class="form-group" style="display: flex; align-items: center;">
+									<label for="account-number"
+										style="flex: 1; text-align: right; margin-right: 1rem; display: none; font-weight: bold; font-size: 16px;">계좌번호</label>
+									<span class="account-number"
+										style="font-size: 18px; color: #0073e6; font-weight: bold;">무통장입금안내
+										<br> 신한: 110-333-4545654 아이언맨
+									</span>
+								</div>
+							</div>
+						</div>
+						<div style="border: 1px solid #ccc; padding: 10px;">
+							<div class="row">
+								<div class="col">
+									<a class="btn btn-outline-secondary" href="/cart_list"> <i
+											class="icon-arrow-left"></i><span class="hidden-xs-down">&nbsp;Back
+											To Cart</span></a>
+								</div>
+								<div class="col text-right">
+									<button type="button" id="submitButton" onclick="submitForm()"
+										class="btn btn-primary">
+										<span class="hidden-xs-down">주문하기&nbsp;</span> <i class="icon-arrow-right"></i>
+									</button>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+
+				<!-- Sidebar          -->
+				<div class="col-xl-3 col-lg-4">
+					<aside class="sidebar">
+						<div class="padding-top-2x hidden-lg-up"></div>
+						<!-- Order Summary Widget-->
+						<section class="widget widget-order-summary">
+							<h3 class="widget-title">Order Summary</h3>
+							<table class="table">
+								<tr>
+									<td style = "border: 1px solid #ccc; border-radius: 10px; background-color: #f5f5f5">총주문상품</td>
+									<td class="text-medium" style = "border: 1px solid #ccc; border-radius: 10px; background-color: #f5f5f5"><span
+											th:text="${sUserCartOrderDto.get(0).productName}"></span>
+										<th:block th:if="${sUserCartOrderDto.size() > 1}">
+											외 <span th:text="${sUserCartOrderDto.size() - 1}"></span> 건
+										</th:block>
+									</td>
+								</tr>
+								<tr>	
+									<td style = "border: 1px solid #ccc; border-radius: 10px; background-color: #f5f5f5">총가격</td>
+									<td  style = "border: 1px solid #ccc; border-radius: 10px; background-color: #f5f5f5" class="text-medium" th:text="|${#numbers.formatInteger(realTotalPrice, 0, 'COMMA')}원|"></td>
+								</tr>
+							</table>
+						</section>
+					</aside>
+				</div>
+			</div>
+		</div>
+	</th:block>
+
+	<th:block layout:fragment="script">
+		<script type="text/javascript">
+			//지도
+			function execDaumPostcode() {
+				new daum.Postcode(
+					{
+						oncomplete: function (data) {
+							// 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+							// 각 주소의 노출 규칙에 따라 주소를 조합한다.
+							// 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+							var addr = ''; // 주소 변수
+							var extraAddr = ''; // 참고항목 변수
+
+							//사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+							if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+								addr = data.roadAddress;
+							} else { // 사용자가 지번 주소를 선택했을 경우(J)
+								addr = data.jibunAddress;
+							}
+
+							// 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+							if (data.userSelectedType === 'R') {
+								// 법정동명이 있을 경우 추가한다. (법정리는 제외)
+								// 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+								if (data.bname !== ''
+									&& /[동|로|가]$/g.test(data.bname)) {
+									extraAddr += data.bname;
+								}
+								// 건물명이 있고, 공동주택일 경우 추가한다.
+								if (data.buildingName !== ''
+									&& data.apartment === 'Y') {
+									extraAddr += (extraAddr !== '' ? ', '
+										+ data.buildingName
+										: data.buildingName);
+								}
+								// 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+								if (extraAddr !== '') {
+									extraAddr = ' (' + extraAddr + ')';
+								}
+								// 조합된 참고항목을 해당 필드에 넣는다.
+							}
+
+							// 우편번호와 주소 정보를 해당 필드에 넣는다.
+							document.getElementById('receiverPostCode').value = data.zonecode;
+							document.getElementById("receiverAddress").value = addr;
+							// 커서를 상세주소 필드로 이동한다.
+							document.getElementById("receiverDetailAddress")
+								.focus();
+						}
+					}).open();
+			}
+			function submitForm() {
+				var form = document.getElementById('orderAction'); // Form element
+				var ordererName = document.getElementById('ordererName').value;
+				var ordererPhoneNo = document.getElementById('ordererPhoneNo').value;
+				var ordererEmail = document.getElementById('ordererEmail').value;
+				var receiverName = document.getElementById('receiverName').value;
+				var receiverPhoneNo = document.getElementById('receiverPhoneNo').value;
+				var receiverPostCode = document.getElementById('receiverPostCode').value;
+				var receiverAddress = document.getElementById('receiverAddress').value;
+				var receiverDetailAddress = document.getElementById('receiverDetailAddress').value;
+
+
+				if (ordererName.trim() === '') {
+					document.getElementById('ordererName').value = '주문자 이름을 입력하세요.';
+					return;
+				}
+
+				if (!isNoValidName(ordererName)) {
+					return;
+				}
+
+
+				if (ordererPhoneNo.trim() === '') {
+					document.getElementById('ordererPhoneNo').value = '주문자 전화번호를 입력하세요.';
+					return;
+				}
+
+				if (isNoValidPhoneNo(ordererPhoneNo)) {
+					return;
+				}
+
+				if (receiverName.trim() === '') {
+					document.getElementById('receiverName').value = '수령자 이름을 입력하세요.';
+					return;
+				}
+				if (!isNoValidName(receiverName)) {
+					return;
+				}
+
+
+				if (receiverPhoneNo.trim() === '') {
+					document.getElementById('receiverPhoneNo').value = '수령자 전화번호를 입력하세요.';
+					return;
+				}
+
+				if (isNoValidPhoneNo(receiverPhoneNo)) {
+					return;
+				}
+
+				if (receiverPostCode.trim() === '') {
+					document.getElementById('receiverPostCode').value = '우편번호을 입력하세요.';
+					return;
+				}
+
+				if (receiverAddress.trim() === '') {
+					document.getElementById('receiverAddress').value = '주소을 입력하세요.';
+					return;
+				}
+
+				if (receiverDetailAddress.trim() === '') {
+					document.getElementById('receiverDetailAddress').value = '상세주소을 입력하세요.';
+					return;
+				}
+
+				// 모든 유효성 검사를 통과한 경우, 폼을 제출합니다.
+				form.submit();
+
+			}
+			function isNoValidPhoneNo(phoneNo) {
+				const phoneRegex = /^(01[016789]{1})-(\d{3,4})-(\d{4})$/;
+				return !phoneRegex.test(phoneNo);
+			}
+
+			function isNoValidName(name) {
+				return name.length >= 0 && name.length <= 20;
+			}
+			function validateName(inputElement, errorElement) {
+				const name = inputElement.value;
+
+				if (isNoValidName(name)) {
+					errorElement.textContent = "";
+				} else {
+					errorElement.textContent = "20글자 이하로 작성하세요";
+				}
+			}
+			function validatePhoneNo(inputElement, errorElement) {
+				const phoneNo = inputElement.value;
+
+				if (isNoValidPhoneNo(phoneNo)) {
+					errorElement.textContent = "유효하지 않은 전화번호 형식입니다. ex) 010-1111-1111";
+				} else {
+					errorElement.textContent = "";
+				}
+			}
+
+			window.addEventListener("DOMContentLoaded", () => {
+				const receiverPhoneNoInput = document.getElementById("receiverPhoneNo");
+				const ordererPhoneNoInput = document.getElementById("ordererPhoneNo");
+				const ordererNameInput = document.getElementById("ordererName");
+				const receiverNameInput = document.getElementById("receiverName");
+
+				const receiverErrorElement = document.getElementById("receiverError");
+				const ordererErrorElement = document.getElementById("ordererError");
+				const receiverNameErrorElement = document.getElementById("receiverNameError");
+				const ordererNameErrorElement = document.getElementById("ordererNameError");
+
+
+
+				receiverPhoneNoInput.addEventListener("input", () => {
+					validatePhoneNo(receiverPhoneNoInput, receiverErrorElement);
+				});
+
+				ordererPhoneNoInput.addEventListener("input", () => {
+					validatePhoneNo(ordererPhoneNoInput, ordererErrorElement);
+				});
+
+				receiverNameInput.addEventListener("input", () => {
+					validateName(receiverNameInput, receiverNameErrorElement);
+				});
+
+				ordererNameInput.addEventListener("input", () => {
+					validateName(ordererNameInput, ordererNameErrorElement);
+				});
+			});
+
+			function addClickEventToInput(inputId) {
+				var input = document.getElementById(inputId);
+
+				input.addEventListener('click', function () {
+					input.value = ''; // 클릭 시 입력란의 값을 초기화
+				});
+			}
+
+			addClickEventToInput('ordererName');
+			addClickEventToInput('ordererPhoneNo');
+			addClickEventToInput('receiverName');
+			addClickEventToInput('receiverPhoneNo');
+			addClickEventToInput('receiverPostCode');
+			addClickEventToInput('receiverAddress');
+			addClickEventToInput('receiverDetailAddress');
+			
+		</script>
+	</th:block>
+</body>
+
+</html>

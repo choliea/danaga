@@ -1,0 +1,136 @@
+<!-- Sidebar -->
+<div th:fragment="nav">
+	<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+		<!-- Sidebar - Brand -->
+		<a class="sidebar-brand d-flex align-items-center justify-content-center" href="/admin">
+			<div class="sidebar-brand-text mx-3">DANAGA <sup>.com</sup></div>
+		</a>
+
+		<!-- Divider -->
+		<hr class="sidebar-divider my-0">
+
+		<!-- Nav Item - Dashboard -->
+		<li class="nav-item active">
+			<a class="nav-link" href="/admin">
+				<i class="fas fa-fw fa-tachometer-alt"></i>
+				<span>Dashboard</span></a>
+		</li>
+
+		<!-- Divider -->
+		<hr class="sidebar-divider">
+
+		<!-- Heading -->
+		<div class="sidebar-heading">
+			BUSINESS MANAGEMENT
+		</div>
+
+		<!-- Nav Item - Pages Collapse Menu -->
+		<li class="nav-item">
+			<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+				aria-expanded="true" aria-controls="collapseTwo">
+				<i class="fas fa-fw fa-cog"></i>
+				<span>상품관리(통합)</span>
+			</a>
+			<div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+				<div class="bg-white py-2 collapse-inner rounded">
+					<a class="collapse-item" href="/admin/admin_product_insert">Product 등록(기존)</a>
+					<a class="collapse-item" href="/admin/admin_product_list">상품 전체삭제</a>
+				</div>
+			</div>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseThree"
+				aria-expanded="true" aria-controls="collapseThree">
+				<i class="fas fa-fw fa-cog"></i>
+				<span>상품관리(개별)</span>
+			</a>
+			<div id="collapseThree" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+				<div class="bg-white py-2 collapse-inner rounded">
+					<a class="collapse-item" href="/admin/admin_category_insert">카테고리 등록/조회</a>
+					<a class="collapse-item" href="/admin/admin_product_only_insert">Product 등록</a>
+					<a class="collapse-item" href="/admin/admin_optionset_insert">OptionSet 등록</a>
+					<a class="collapse-item" href="/admin/admin_optionset_list">OptionSet 삭제</a>
+				</div>
+			</div>
+		</li>
+
+		<li class="nav-item">
+			<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseOrders"
+				aria-expanded="true" aria-controls="collapseOrders">
+				<i class="fas fa-fw fa-cog"></i>
+				<span>주문관리</span>
+			</a>
+			<div id="collapseOrders" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+				<div class="bg-white py-2 collapse-inner rounded">
+					<a class="collapse-item" href="/admin/admin_order_list">배송 관리</a>
+					<a class="collapse-item" href="/admin/admin_refund_list">환불/취소 관리</a>
+				</div>
+			</div>
+		</li>
+
+		<!-- Divider -->
+		<hr class="sidebar-divider">
+
+		<!-- Heading -->
+		<div class="sidebar-heading">
+			SITE MANAGEMENT
+		</div>
+
+		<!-- Nav Item - Pages Collapse Menu -->
+		<li class="nav-item">
+			<a class="nav-link" href="/admin/admin_member_list">
+				<i class="fas fa-fw fa-folder"></i>
+				<span>회원 리스트</span>
+			</a>
+		</li>
+		
+
+		<!-- Nav Item - Tables -->
+		<li class="nav-item">
+			<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseBoard"
+				aria-expanded="true" aria-controls="collapseBoard">
+				<i class="fas fa-fw fa-cog"></i>
+				<span>게시글 관리</span>
+			</a>
+			<div id="collapseBoard" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+				<div class="bg-white py-2 collapse-inner rounded">
+					<a class="collapse-item" href="/admin/admin_board_list">자유게시판</a>
+					<a class="collapse-item" href="/admin/admin_1to1_list">1:1문의</a>
+					<a class="collapse-item" href="/admin/admin_board_upload">공지사항/FAQ 업로드</a>
+				</div>
+			</div>
+		</li>
+
+		<!-- Divider -->
+		<hr class="sidebar-divider">
+
+		<li class="nav-item">
+			<a class="nav-link" href="/index">
+				<i class="fas fa-fw fa-table"></i>
+				<span>다나가닷컴으로</span></a>
+		</li>
+
+		<!-- Divider -->
+		<hr class="sidebar-divider d-none d-md-block">
+
+		<!-- Sidebar Toggler (Sidebar) -->
+		<div class="text-center d-none d-md-inline">
+			<button class="rounded-circle border-0" id="sidebarToggle"></button>
+		</div>
+
+	</ul>
+</div>
+<!-- End of Sidebar -->
+
+<!-- Footer -->
+<div th:fragment="bottom">
+	<footer class="sticky-footer bg-white">
+		<div class="container my-auto">
+			<div class="copyright text-center my-auto">
+				<span>© All rights reserved. Made by Team Avengers with ITWILL</span>
+			</div>
+		</div>
+	</footer>
+	<!-- End of Footer -->
+</div>

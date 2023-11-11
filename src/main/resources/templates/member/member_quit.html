@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+ layout:decorate="layout/layout(title='회원탈퇴')">
+<head>
+</head>
+<body>
+      <th:block layout:fragment="content">
+      <!-- Page Content-->
+      <div class="container padding-bottom-3x mb-2">
+        <div class="row justify-content-center">
+          <div class="col-lg-8 col-md-10">
+            <h2>회원을 탈퇴하시겠습니까?</h2>
+            <p>회원을 탈퇴하려면</p>
+            <ol class="list-unstyled">
+              <li><span class="text-primary text-medium">1. </span>비밀번호를 입력하세요.</li>
+              <li><span class="text-primary text-medium">2. </span>"회원을 탈퇴하겠습니다" 를 입력하세요.</li>
+            </ol>
+            <form class="card mt-4" id="quit_form">
+              <div class="card-body">
+                <div class="form-group">
+                  <label for="pass">비밀번호</label>
+                  <input class="form-control" type="password" id="pass" required>
+                  <label for="quit">회원을 탈퇴하겠습니다</label>
+                  <input class="form-control" type="text" id="quit" required>
+                </div>
+              </div>
+              <div class="col-12 text-center text-sm-left">
+                <button class="btn-account-register btn btn-primary" id="btn-quit" type="button">회원탈퇴</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      </th:block>
+      <th:block layout:fragment="script">
+		<script type="text/javascript">
+		/***************프로필변경 [/member/modify_action_rest]******* */
+		var member_delete_action_rest=function(data){
+			$.ajax({
+					url:'/member/delete_action_rest',
+    				method:'DELETE',
+    				data:JSON.stringify(data),
+    				dataType: "json",
+    				contentType: 'application/json;charset=UTF-8',
+    				success:function(resultJson){
+					if(resultJson.result==1) {
+						$('#pass').css('border','0.5px solid orange');
+						$('#pass').tooltip({'trigger':'hover', 'title': resultJson.msg});
+			    		$('#pass').tooltip('show');
+					} else {
+						alert("회원 탈퇴가 완료되었습니다.");
+						location.href="/index";
+		   			}
+				},
+				error:function(){
+					location.href="/404";
+				}
+			});
+		};
+    	/*********회원 삭제시 텍스트 입력 일치 확인**********/
+    	$('#btn-quit').on('click',function(e){
+    		
+    		if($('#quit').val()!='회원을 탈퇴하겠습니다') {
+    			$('#quit').css('border','0.5px dotted orange');
+    			$('#quit').tooltip({'trigger':'hover', 'title':'정확히 입력해주십시요.'});
+    			$('#quit').tooltip('show');
+    		}else{
+    			$('#quit').css('border','');
+				let password = $('#pass').val();
+    			let data = {
+				"password" : password
+				}
+    			member_delete_action_rest(data);
+    		}
+    	});
+		</script>
+	</th:block>
+  </body>
+  </html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <th:block th:fragment="product-table(from)" th:remove="tag">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Product Name</th>
+        <th class="text-center"><a class="btn btn-sm btn-outline-danger" th:href="@{|/${from}_delete|}">전체 삭제</a></th>
+      </tr>
+    </thead>
+    <tbody>
+    <th:block th:if="${productList==null||productList.isEmpty()}">
+    <tr style="text-align: center;">
+    <td style="display: inline-block;">
+		<img src="images/out-of-stock.png" style="display: block; margin: 0 auto;">
+		<h1 style="text-align: center;"><a href="/product">Go to Shopping</a></h1>
+		</td></tr>
+    </th:block>
+    <th:block th:unless="${productList==null||productList.isEmpty()}">
+      <tr th:each="productDto:${productList}">
+        <td>
+          <div class="product-item">
+            <a class="product-thumb" href="shop-single.html" th:href="@{/product__${productDto.osId}__}">
+              <img src="img/shop/product/01.jpg" th:src="${productDto.pImage}" alt="Product">
+            </a>
+            <div class="product-info">
+              <h4 class="product-title" th:text="${productDto.name}">
+                <a href="shop-single.html" th:href="@{/product__${productDto.osId}__}">Unionbay Park</a></h4>
+              <div class="text-lg text-medium text-muted" th:text="${#numbers.formatInteger(productDto.totalPrice, 3, 'COMMA')}+'원'">$43.90</div>
+            </div>
+          </div>
+        </td>
+        <td class="text-center"><a class="remove-from-cart" href="#" title="Remove item"><i class="icon-cross" th:attr="|data-${from}-remove|='__${productDto.osId}__'" data-toggle="tooltip"></i></a></td>
+      </tr>
+      </th:block>
+    </tbody>
+  </table>
+</html>

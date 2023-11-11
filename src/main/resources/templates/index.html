@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="layout/layout(title='')">
+<!-- Body-->
+<!-- Header -->
+
+<head>
+</head>
+
+<body>
+	<!-- Page Content-->
+	<th:block layout:fragment="content">
+		<!-- Main Slider-->
+		<section class="container-fluid">
+			<div class="row justify-content-center">s
+				<div class="col-xl-8 col-lg-12">
+					<div class="row">
+						<div class="owl-carousel dots-inside"
+							data-owl-carousel="{ &quot;nav&quot;: true, &quot;dots&quot;: true, &quot;loop&quot;: true, &quot;autoplay&quot;: true, &quot;autoplayTimeout&quot;: 7000 }">
+							<img src="bootstrap/img/hero-slider/main1.gif" alt="Image">
+							<img src="bootstrap/img/hero-slider/main2.png" alt="Image">
+							<img src="bootstrap/img/hero-slider/main3.png" alt="Image">
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Featured Products Carousel-->
+		<section class="container padding-top-1x padding-bottom-3x">
+			<h2 class="text-center mb-30">이달의 히트상품</h2>
+			<div class="owl-carousel"
+				data-owl-carousel="{ &quot;nav&quot;: false, &quot;dots&quot;: true, &quot;margin&quot;: 30, &quot;responsive&quot;: {&quot;0&quot;:{&quot;items&quot;:1},&quot;576&quot;:{&quot;items&quot;:2},&quot;768&quot;:{&quot;items&quot;:3},&quot;991&quot;:{&quot;items&quot;:4},&quot;1200&quot;:{&quot;items&quot;:4}} }">
+				<!-- Product-->
+				<div class="grid-item" th:each="productDto:${hits}">
+					<div class="product-card">
+						<a class="product-thumb" href="product-detail.html" th:href="${'/product'+productDto.osId}"><img
+								src="img/shop/products/09.jpg" alt="Product" th:attr="src=@{${productDto.pImage}}"></a>
+						<h3 class="product-title" th:text="${productDto.name}" th:href="${'/product'+productDto.osId}">
+							<a th:href="${'/product'+productDto.osId}">상품명</a>
+						</h3>
+						<h4 class="product-price"
+							th:text="${#numbers.formatDecimal(productDto.totalPrice,1,'COMMA',0,'POINT')}+'원'"
+							th:href="${'/product'+productDto.osId}">$34.99</h4>
+						<div class="product-buttons">
+							<button th:if="${productDto.isInterested}"
+								class="btn btn-outline-secondary btn-sm btn-wishlist active" data-toggle="tooltip"
+								th:product-heart="|${productDto.osId}|" title="Whishlist">
+								<i class="icon-heart" th:heart="|${productDto.osId}|"></i>
+							</button>
+							<button th:unless="${productDto.isInterested}"
+								class="btn btn-outline-secondary btn-sm btn-wishlist" data-toggle="tooltip"
+								title="Whishlist" th:product-heart-yet="|${productDto.osId}|">
+								<i class="icon-heart" th:heart="|${productDto.osId}|"></i>
+							</button>
+							<button class="btn btn-outline-primary btn-sm" data-toast data-toast-type="success"
+								data-toast-position="topRight" data-toast-icon="icon-circle-check"
+								data-toast-title="Product" data-toast-message="successfuly added to cart!"
+								th:data-optionSetId="${productDto.osId}">Add to
+								Cart</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Promo #2-->
+		<section class="container-fluid">
+			<div class="row justify-content-center">
+				<div class="col-xl-8 col-lg-12">
+					<div class="fw-section rounded padding-top-4x padding-bottom-4x"
+						style="background-image: url(img/banners/home02.jpg);"><span class="overlay rounded"
+							style="opacity: .35;"></span>
+						<div class="text-center">
+							<h3 class="display-4 text-normal text-white text-shadow mb-1">Merry Christmas</h3>
+							<h2 class="display-2 text-bold text-white text-shadow">크리스마스 기념 산타세일 진행중!</h2>
+							<h4
+								class="d-inline-block h2 text-normal text-white text-shadow border-default border-left-0 border-right-0 mb-4">
+								플레이스테이션, 닌텐도 Switch 등등</h4><br><a class="btn btn-primary margin-bottom-none"
+								href="product25">산타세일 바로가기</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Services-->
+		<section class="container padding-top-3x">
+			<div class="row">
+				<div class="col-md-3 col-sm-6 text-center mb-30"><img
+						class="d-block w-90 img-thumbnail rounded-circle mx-auto mb-3"
+						src="bootstrap/img/services/01.png" alt="Shipping">
+					<h6>전세계 유료배송</h6>
+				</div>
+				<div class="col-md-3 col-sm-6 text-center mb-30"><img
+						class="d-block w-90 img-thumbnail rounded-circle mx-auto mb-3"
+						src="bootstrap/img/services/02.png" alt="Money Back">
+					<h6>1년 유상 A/S</h6>
+				</div>
+				<div class="col-md-3 col-sm-6 text-center mb-30"><img
+						class="d-block w-90 img-thumbnail rounded-circle mx-auto mb-3"
+						src="bootstrap/img/services/03.png" alt="Support">
+					<h6>고객센터</h6>
+					<p class="text-muted margin-bottom-none">유료전화 1577-1577</p>
+				</div>
+				<div class="col-md-3 col-sm-6 text-center mb-30"><img
+						class="d-block w-90 img-thumbnail rounded-circle mx-auto mb-3"
+						src="bootstrap/img/services/04.png" alt="Payment">
+					<h6>무통장 결제</h6>
+				</div>
+			</div>
+		</section>
+
+	</th:block>
+	<th:block layout:fragment="script">
+	</th:block>
+</body>
+
+</html>

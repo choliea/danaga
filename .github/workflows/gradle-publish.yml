@@ -1,0 +1,71 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a package using Gradle and then publish it to GitHub packages when a release is created
+# For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#Publishing-using-gradle
+
+name: Java CI with Gradle
+
+on:
+  push:
+    branches:
+      - master
+      
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+       
+    - name: Build with Gradle
+      uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
+      with:
+        arguments: clean build bootJar
+
+    - name: Get current time
+      uses: 1466587594/get-current-time@v2
+      id: current-time
+      with:
+        format: YYYYMMDDTHHmm
+        utcOffset: "+09:00"
+
+    - name: Generate deployment package
+      run: |
+        mkdir -p deployment
+        cp builc/libs/Avengers-0.0.1-SNAPSHOT.jar deployment/Avengers-0.0.1-SNAPSHOT.jar
+        # cp deployment/Procfile deployment/Procfile
+        cd deployment && zip -r Avengers-${{steps.current-time.outputs.formattedTime}} .
+        ls
+        
+    - name: Set Environment Variable
+      run: eb setenv SPRING_PROFILES_ACTIVE=prod
+      env:
+        AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+        AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+        AWS_DEFAULT_REGION: 'ap-northeast-1'
+        EB_APPLICATION_NAME: 'danaga-app'
+        EB_ENVIRONMENT_NAME: 'Danaga-env'
+        
+    - name: Deploy Avengers to EB
+      uses: einaregilsson/beanstalk-deploy@v14
+      with:
+        aws_access_key: ${{secrets.AWS_ACCESS_KEY_ID}}
+        aws_secret_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+        application_name: danaga-app
+        environment_name: Danaga-env
+        version_label: Avengers-${{steps.current-time.outputs.formattedTime}}
+        region: ap-northeast-1
+        deployment_package: deployment/Avengers-${{steps.current-time.outputs.formattedTime}}.zip
+        
+   
