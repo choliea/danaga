@@ -218,10 +218,7 @@ public class OptionSetServiceImpl implements OptionSetService {
 		Map<String, Set<String>> dto = new HashMap<String, Set<String>>();
 		for (int i = 0; i < childrenIds.size(); i++) {
 			List<OptionNamesValues> optionNameValue = optionDao.findOptionNameValueMapByCategoryId(childrenIds.get(i));
-			if(optionNameValue==null||optionNameValue.isEmpty()) {
-				log.warn("no children categories found");
-				return ResponseDto.builder().msg(ProductExceptionMsg.FOUND_NO_OPTIONS).build();
-			}
+			
 			Map<String, Set<String>> result = optionNameValue.stream().collect(Collectors.groupingBy(
 					OptionNamesValues::getName, Collectors.mapping(OptionNamesValues::getValue, Collectors.toSet())));
 			result.forEach((key, value) -> dto.merge(key, value, (v1, v2) -> {
