@@ -22,7 +22,6 @@ public class MemberUpdateDto {
 	private String postCode;
 	private String address;
 	private String detailAddress;
-	private String role;
 	
 	public static MemberUpdateDto toDto(Member entity) {
     	return MemberUpdateDto.builder()
@@ -33,7 +32,6 @@ public class MemberUpdateDto {
     			.postCode(entity.getPostCode())
     			.address(entity.getAddress())
     			.detailAddress(entity.getDetailAddress())
-    			.role(entity.getRole())
     			.build();
     }
 }
