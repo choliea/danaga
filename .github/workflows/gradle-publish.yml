@@ -71,7 +71,7 @@ jobs:
         application_name: danaga-app
         environment_name: Danaga-env
         version_label: danaga-${{steps.current-time.outputs.formattedTime}}
-        region: ap-northeast-2
+        region: ap-northeast-1
         deployment_package: deployment/danaga-${{steps.current-time.outputs.formattedTime}}.zip
         
    
