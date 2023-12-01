@@ -21,8 +21,12 @@
 
 ![danaga tech stack ](https://github.com/choliea/danaga/assets/133833132/a8774e39-60ab-49be-b8f2-590cf4ad0a63)
 
+# ERD
 
-#맡은 파트
+![danagafullimg](https://github.com/choliea/danaga/assets/133833132/588b0dd5-2f81-465f-8da2-933073bba4a6)
+
+
+# 맡은 파트
 Product
 
 ![카테고리 ](https://github.com/choliea/danaga/assets/133833132/e1443e38-dc04-4f67-9446-773292bb9ae9)
